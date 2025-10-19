@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Connecta4Game</string>
+    <string name="title">Connect 4 Game - Kotlin</string>
+    <string name="column_filled">Column is filled</string>
 </resources>
