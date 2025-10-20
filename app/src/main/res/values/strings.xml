@@ -2,4 +2,12 @@
     <string name="app_name">Connecta4Game</string>
     <string name="title">Connect 4 Game - Kotlin</string>
     <string name="column_filled">Column is filled</string>
+    <string name="activity_connection_title">Server Setup</string>
+    <string name="activity_connection_name">Player Name</string>
+    <string name="activity_connection_protocol">Protocol</string>
+    <string name="activity_connection_server_ip">Server IP</string>
+    <string name="activity_connection_port">Port</string>
+    <string name="activity_connection_btn_connect">Connect!</string>
+    <string name="activity_connection_btn_server_local">Local</string>
+    <string name="activity_connection_btn_server_proxmox">Proxmox</string>
 </resources>
