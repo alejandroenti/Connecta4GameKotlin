@@ -22,8 +22,8 @@
 
     <TableLayout
         android:id="@+id/tableLayout"
-        android:layout_width="370dp"
-        android:layout_height="420dp"
+        android:layout_width="359dp"
+        android:layout_height="467dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.487"
@@ -135,7 +135,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/serverIPInputText"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:hint="@string/activity_connection_server_ip" />
 
             </com.google.android.material.textfield.TextInputLayout>
