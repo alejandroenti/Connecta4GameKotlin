@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <!-- Cualquier contenido -->
+
+    <ImageView
+        android:id="@+id/userImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/ic_launcher_foreground" />
+
+    <TextView
+        android:id="@+id/usernName"
+        android:layout_width="192dp"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:text="Player Name"
+        android:textAlignment="viewStart"
+        tools:ignore="RtlCompat" />
+
+    <ImageButton
+        android:id="@+id/sendInvitation"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0"
+        android:backgroundTint="@color/blue_sky"
+        android:scaleType="fitXY"
+        android:tint="@color/white"
+        app:srcCompat="@drawable/ic_send" />
+
+</LinearLayout>
