@@ -54,7 +54,7 @@ class ConnectionActivity : AppCompatActivity() {
 
     private fun setLocalConfiguration() {
         protocolInput.setText("ws")
-        serverIPInput.setText("localhost")
+        serverIPInput.setText("10.0.2.2")
         portInput.setText("3000")
     }
 
