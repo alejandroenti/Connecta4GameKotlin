@@ -10,5 +10,20 @@ enum class KeyValues (val value : String) {
     K_COLOR("color"),
     K_PLAY("play"),
     K_CLIENT_LIST("clientsList"),
-    K_CLIENTS_LIST("clientsList")
+    K_CLIENTS_LIST("clientsList"),
+    K_COUNTDOWN("countdown"),
+    K_CLIENT_SEND_INVITATION("clientSendInvitation"),
+    K_CLIENT_ANSWER_INVITATION("clientAnswerInvitation"),
+    K_SEND_TO("sendTo"),
+    K_SEND_FROM("sendFrom"),
+    K_PIECE_ID("pieceId"),
+    K_REASON("reason"),
+    K_PLAY_ACCEPTED("playAccepted"),
+    K_PLAY_REJECTED("playRejected"),
+    K_WINNING_LINE_COORDS("winningLineCoords"),
+    K_OBJECT_LIST("objectsList"),
+    K_COLUMN("column"),
+    K_ROW("row"),
+    K_WINNER("winner"),
+    K_GAME_ENDED("gameEnded")
 }
