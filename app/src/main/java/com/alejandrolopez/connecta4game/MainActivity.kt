@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
+import com.alejandrolopez.connecta4game.classes.WSClient
 import java.net.URI
 
 class MainActivity : AppCompatActivity() {
