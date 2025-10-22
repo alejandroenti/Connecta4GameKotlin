@@ -6,6 +6,7 @@ import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
 import com.alejandrolopez.connecta4game.MainActivity.Companion.myColor
 import com.alejandrolopez.connecta4game.MainActivity.Companion.objects
+import com.alejandrolopez.connecta4game.MainActivity.Companion.tracker
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import org.json.JSONObject
@@ -43,7 +44,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             KeyValues.K_SERVER_DATA.value -> {
                 clientName = msgObj.getString(KeyValues.K_VALUE.value)
 
-                val arrClients = msgObj.getJSONArray("clientsList")
+                val arrClients = msgObj.getJSONArray(KeyValues.K_CLIENT_LIST.value)
                 val newClients: MutableList<ClientData> = ArrayList<ClientData>()
                 run {
                     var i = 0
@@ -63,7 +64,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     }
                 }
 
-                val arrObjects = msgObj.getJSONArray("objectsList")
+                val arrObjects = msgObj.getJSONArray(KeyValues.K_OBJECT_LIST.value)
                 val newObjects: MutableList<GameObject> = ArrayList<GameObject>()
                 var i = 0
                 while (i < arrObjects.length()) {
@@ -73,65 +74,66 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 }
                 objects = newObjects
 
+                /*
                 if (ctrlPlay != null) {
                     ctrlPlay.updateGameState(msgObj)
                 }
+                 */
 
-                if (clients.size === 1) {
+                /*if (clients.size === 1) {
                     ctrlWait.txtPlayer0.setText(clients.get(0).name)
                 } else if (clients.size > 1) {
                     ctrlWait.txtPlayer0.setText(clients.get(0).name)
                     ctrlWait.txtPlayer1.setText(clients.get(1).name)
                     ctrlPlay.title.setText(clients.get(0).name + " vs " + clients.get(1).name)
-                }
+                }*/
 
-                if (UtilsViews.getActiveView().equals("ViewConfig")) {
+                /*if (UtilsViews.getActiveView().equals("ViewConfig")) {
                     UtilsViews.setViewAnimating("ViewOpponentSelection")
-                }
+                }*/
             }
 
-            "countdown" -> {
-                if (!UtilsViews.getActiveView().equals("ViewWait")) {
+            KeyValues.K_COUNTDOWN.value -> {
+                /*if (!UtilsViews.getActiveView().equals("ViewWait")) {
                     // Rebutgem la resta de peticions
                     (UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).rejectAllPetions()
                     UtilsViews.setView("ViewWait")
-                }
+                }*/
 
-                val value = msgObj.getInt("value")
+                val value = msgObj.getInt(KeyValues.K_VALUE.value)
                 val txt = value.toString()
                 if (value == 0) {
-                    UtilsViews.setViewAnimating("ViewPlay")
-                    txt = "GO"
+                    //UtilsViews.setViewAnimating("ViewPlay")
                 }
-                ctrlWait.txtTitle.setText(txt)
+                //ctrlWait.txtTitle.setText(txt)
             }
 
-            "playAccepted" -> {
-                val pieceId = msgObj.getString("pieceId")
-                val col = msgObj.getInt("column")
-                val row = msgObj.getInt("row")
-                val gameEnded = msgObj.getBoolean("gameEnded")
-                val winner = msgObj.optString("winner", null)
+            KeyValues.K_PLAY_ACCEPTED.value -> {
+                val pieceId = msgObj.getString(KeyValues.K_PIECE_ID.value)
+                val col = msgObj.getInt(KeyValues.K_COLUMN.value)
+                val row = msgObj.getInt(KeyValues.K_ROW.value)
+                val gameEnded = msgObj.getBoolean(KeyValues.K_GAME_ENDED.value)
+                val winner = msgObj.optString(KeyValues.K_WINNER.value, null)
 
                 // Procesar coordenadas de línea ganadora si existen
                 val winningLineCoords: IntArray? = null
-                if (msgObj.has("winningLineCoords") && !msgObj.isNull("winningLineCoords")) {
-                    val coordsArray = msgObj.getJSONArray("winningLineCoords")
-                    winningLineCoords = IntArray(coordsArray.length())
+                if (msgObj.has(KeyValues.K_WINNING_LINE_COORDS.value) && !msgObj.isNull(KeyValues.K_WINNING_LINE_COORDS.value)) {
+                    val coordsArray = msgObj.getJSONArray(KeyValues.K_WINNING_LINE_COORDS.value)
+                    //winningLineCoords = IntArray(coordsArray.length())
                     var i = 0
                     while (i < coordsArray.length()) {
-                        winningLineCoords[i] = coordsArray.getInt(i)
+                        //winningLineCoords[i] = coordsArray.getInt(i)
                         i++
                     }
                 }
 
-                if (ctrlPlay != null) {
+                /*if (ctrlPlay != null) {
                     ctrlPlay.handlePlayAccepted(pieceId, col, row, winner, winningLineCoords)
-                }
+                }*/
 
                 // Si el juego terminó
                 if (gameEnded && winner != null) {
-                    pauseDuring(1500, {
+                    /*pauseDuring(1500, {
                         var result = ""
                         if (winner == "DRAW") {
                             result = "DRAW"
@@ -145,13 +147,13 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                             UtilsViews.getController("ViewResult") as CtrlResult
                         ctrlResult.setResultData(result, myColor, winner, ctrlPlay.boardState)
                         UtilsViews.setViewAnimating("ViewResult")
-                    })
+                    })*/
                 }
             }
 
-            "playRejected" -> {
-                val rejectedPieceId = msgObj.getString("pieceId")
-                val reason = msgObj.optString("reason", "Invalid move")
+            KeyValues.K_PLAY_REJECTED.value -> {
+                val rejectedPieceId = msgObj.getString(KeyValues.K_PIECE_ID.value)
+                val reason = msgObj.optString(KeyValues.K_REASON.value, "Invalid move")
                 println("Play rejected: " + reason)
                 /*if (ctrlPlay != null) {
                     ctrlPlay.handlePlayRejected(rejectedPieceId)
@@ -200,8 +202,9 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 //(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).loadSendList()
             }
 
-            "clientSendInvitation" -> {
-                val username = msgObj.getString("sendFrom")
+            KeyValues.K_CLIENT_SEND_INVITATION.value -> {
+                val username = msgObj.getString(KeyValues.K_SEND_FROM.value)
+
                 /*(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).addFromReceiveList(
                     username
                 )
@@ -210,9 +213,9 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 )*/
             }
 
-            "clientAnswerInvitation" -> {
+            KeyValues.K_CLIENT_ANSWER_INVITATION.value -> {
                 println(msgObj)
-                val user = msgObj.getString("sendTo")
+                val user = msgObj.getString(KeyValues.K_SEND_TO.value)
                 /*(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).reactivateFromSendList(
                     user
                 )

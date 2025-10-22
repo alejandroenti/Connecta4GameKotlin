@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.alejandrolopez.connecta4game.classes.ActivityTracker
 import com.alejandrolopez.connecta4game.classes.ClientData
 import com.alejandrolopez.connecta4game.classes.GameObject
 import com.alejandrolopez.connecta4game.classes.WSClient
@@ -21,6 +22,8 @@ class MainActivity : AppCompatActivity() {
 
         public var clients : MutableList<ClientData> = ArrayList<ClientData>()
         public var objects: MutableList<GameObject> = ArrayList<GameObject>()
+
+        public var tracker : ActivityTracker = ActivityTracker()
 
         public fun connectWS(protocol : String, serverIP : String, port : String) {
             var uri : URI = URI(protocol + "://" + serverIP + ":" + port)
