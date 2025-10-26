@@ -1,5 +1,6 @@
 package com.alejandrolopez.connecta4game
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
@@ -93,5 +94,8 @@ class ConnectionActivity : AppCompatActivity() {
 
         MainActivity.clientName = name
         MainActivity.connectWS(protocol, serverIP, port)
+
+        val intent = Intent(this, OpponentSelectionActivity::class.java)
+        startActivity(intent)
     }
 }

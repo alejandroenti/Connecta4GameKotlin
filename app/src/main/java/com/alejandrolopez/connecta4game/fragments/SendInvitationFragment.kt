@@ -25,10 +25,10 @@ class SendInvitationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val textView = view.findViewById<TextView>(R.id.usernName)
-        val imageButton = view.findViewById<ImageButton>(R.id.sendInvitation)
+        userName = view.findViewById<TextView>(R.id.usernName)
+        btn = view.findViewById<ImageButton>(R.id.sendInvitation)
 
-        imageButton.setOnClickListener {
+        btn.setOnClickListener {
             // Send Invitation
         }
     }

@@ -1,12 +1,16 @@
 package com.alejandrolopez.connecta4game.classes
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import com.alejandrolopez.connecta4game.ConnectionActivity
 import com.alejandrolopez.connecta4game.MainActivity
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
 import com.alejandrolopez.connecta4game.MainActivity.Companion.myColor
 import com.alejandrolopez.connecta4game.MainActivity.Companion.objects
 import com.alejandrolopez.connecta4game.MainActivity.Companion.tracker
+import com.alejandrolopez.connecta4game.OpponentSelectionActivity
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import org.json.JSONObject
@@ -14,6 +18,7 @@ import java.lang.Exception
 import java.net.URI
 
 class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
+
     override fun onOpen(handshakedata: ServerHandshake?) {
         Log.d("WSConnection", "[*] Opened Connection!")
         var msgObject : JSONObject = JSONObject()
@@ -42,7 +47,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
         when (msgObj.getString(KeyValues.K_TYPE.value)) {
             KeyValues.K_CLIENT_NAME.value -> clientName = msgObj.getString(KeyValues.K_VALUE.value)
             KeyValues.K_SERVER_DATA.value -> {
-                clientName = msgObj.getString(KeyValues.K_VALUE.value)
+                //clientName = msgObj.getString(KeyValues.K_VALUE.value)
 
                 val arrClients = msgObj.getJSONArray(KeyValues.K_CLIENT_LIST.value)
                 val newClients: MutableList<ClientData> = ArrayList<ClientData>()
