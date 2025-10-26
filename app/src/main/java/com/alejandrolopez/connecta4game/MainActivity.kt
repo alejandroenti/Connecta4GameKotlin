@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         public lateinit var wsClient : WSClient
         public lateinit var clientName : String
+        public lateinit var opponentName : String
         public lateinit var myColor : String
 
         public var clients : MutableList<ClientData> = ArrayList<ClientData>()

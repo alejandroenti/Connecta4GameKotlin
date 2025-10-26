@@ -11,9 +11,11 @@ import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
 import com.alejandrolopez.connecta4game.MainActivity.Companion.myColor
 import com.alejandrolopez.connecta4game.MainActivity.Companion.objects
+import com.alejandrolopez.connecta4game.MainActivity.Companion.opponentName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.tracker
 import com.alejandrolopez.connecta4game.MainActivity.Companion.wsClient
 import com.alejandrolopez.connecta4game.OpponentSelectionActivity
+import com.alejandrolopez.connecta4game.WaitActivity
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import org.json.JSONObject
@@ -32,7 +34,6 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
     }
 
     override fun onMessage(message: String?) {
-        Log.d("WSConnection", "[*] Message received!")
         wsMessage(message!!)
     }
 
@@ -107,13 +108,12 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     (UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).rejectAllPetions()
                     UtilsViews.setView("ViewWait")
                 }*/
-
                 val value = msgObj.getInt(KeyValues.K_VALUE.value)
-                val txt = value.toString()
+
                 if (value == 0) {
                     //UtilsViews.setViewAnimating("ViewPlay")
                 }
-                //ctrlWait.txtTitle.setText(txt)
+                (MainActivity.currentActivityRef as WaitActivity).setCounter(value)
             }
 
             KeyValues.K_PLAY_ACCEPTED.value -> {
@@ -216,16 +216,20 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
 
             KeyValues.K_CLIENT_SEND_INVITATION.value -> {
                 val username = msgObj.getString(KeyValues.K_SEND_FROM.value)
+                (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
 
                 /*if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
                     (MainActivity.currentActivityRef as OpponentSelectionActivity).showInvitationPopUp()
                 }*/
+
+                opponentName = username
 
                 var json : JSONObject = JSONObject()
                 json.put(KeyValues.K_TYPE.value, KeyValues.K_CLIENT_ANSWER_INVITATION.value)
                 json.put(KeyValues.K_SEND_FROM.value, username)
                 json.put(KeyValues.K_SEND_TO.value, clientName)
                 json.put(KeyValues.K_VALUE.value, true)
+
                 wsClient.send(json.toString())
             }
 
@@ -236,13 +240,10 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
 
                 if (!value) {
                     // Reactivar botón para enviar invitación
+                    return
                 }
-                /*(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).reactivateFromSendList(
-                    user
-                )
-                (UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).removeFromSendInvitation(
-                    user
-                )*/
+
+                (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
             }
         }
     }

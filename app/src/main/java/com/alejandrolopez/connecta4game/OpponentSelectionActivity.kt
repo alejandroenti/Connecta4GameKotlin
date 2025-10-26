@@ -97,4 +97,9 @@ class OpponentSelectionActivity : AppCompatActivity() {
             windowManager.removeView(layout)
         }
     }
+
+    public fun passToWait() {
+        val intent = Intent(this, WaitActivity::class.java)
+        startActivity(intent)
+    }
 }
