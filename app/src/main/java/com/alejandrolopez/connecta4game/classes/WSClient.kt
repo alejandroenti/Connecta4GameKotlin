@@ -2,7 +2,9 @@ package com.alejandrolopez.connecta4game.classes
 
 import android.content.Context
 import android.content.Intent
+import android.provider.Settings
 import android.util.Log
+import androidx.core.app.ActivityCompat.startActivityForResult
 import com.alejandrolopez.connecta4game.ConnectionActivity
 import com.alejandrolopez.connecta4game.MainActivity
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
@@ -10,6 +12,7 @@ import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
 import com.alejandrolopez.connecta4game.MainActivity.Companion.myColor
 import com.alejandrolopez.connecta4game.MainActivity.Companion.objects
 import com.alejandrolopez.connecta4game.MainActivity.Companion.tracker
+import com.alejandrolopez.connecta4game.MainActivity.Companion.wsClient
 import com.alejandrolopez.connecta4game.OpponentSelectionActivity
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
@@ -214,17 +217,26 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             KeyValues.K_CLIENT_SEND_INVITATION.value -> {
                 val username = msgObj.getString(KeyValues.K_SEND_FROM.value)
 
-                /*(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).addFromReceiveList(
-                    username
-                )
-                (UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).addToSendInvitation(
-                    username
-                )*/
+                /*if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).showInvitationPopUp()
+                }*/
+
+                var json : JSONObject = JSONObject()
+                json.put(KeyValues.K_TYPE.value, KeyValues.K_CLIENT_ANSWER_INVITATION.value)
+                json.put(KeyValues.K_SEND_FROM.value, username)
+                json.put(KeyValues.K_SEND_TO.value, clientName)
+                json.put(KeyValues.K_VALUE.value, true)
+                wsClient.send(json.toString())
             }
 
             KeyValues.K_CLIENT_ANSWER_INVITATION.value -> {
                 println(msgObj)
-                val user = msgObj.getString(KeyValues.K_SEND_TO.value)
+                val user : String = msgObj.getString(KeyValues.K_SEND_TO.value)
+                val value : Boolean = msgObj.getString(KeyValues.K_VALUE.value).toBoolean()
+
+                if (!value) {
+                    // Reactivar botón para enviar invitación
+                }
                 /*(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).reactivateFromSendList(
                     user
                 )
