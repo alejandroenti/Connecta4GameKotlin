@@ -182,7 +182,9 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     i++
                 }
 
-                //(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).loadSendList()
+                if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).createSendList()
+                }
             }
 
             KeyValues.K_CLIENTS_LIST.value -> {
@@ -204,7 +206,9 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     i++
                 }
 
-                //(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).loadSendList()
+                if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).createSendList()
+                }
             }
 
             KeyValues.K_CLIENT_SEND_INVITATION.value -> {

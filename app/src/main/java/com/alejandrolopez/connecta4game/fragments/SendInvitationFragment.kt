@@ -7,7 +7,12 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
+import com.alejandrolopez.connecta4game.MainActivity.Companion.wsClient
 import com.alejandrolopez.connecta4game.R
+import org.json.JSONObject
+
+
 
 class SendInvitationFragment : Fragment() {
 
@@ -29,7 +34,14 @@ class SendInvitationFragment : Fragment() {
         btn = view.findViewById<ImageButton>(R.id.sendInvitation)
 
         btn.setOnClickListener {
-            // Send Invitation
+            val json = JSONObject()
+            json.put("type", "clientSendInvitation")
+            json.put("sendFrom", clientName)
+            json.put("sendTo", userName.text)
+            wsClient.send(json.toString())
+
+            btn.isEnabled = false
+            btn.setBackgroundColor(R.color.red)
         }
     }
 

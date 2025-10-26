@@ -25,6 +25,8 @@ class OpponentSelectionActivity : AppCompatActivity() {
         }
 
         panel = this.findViewById<LinearLayout>(R.id.sendInvitationPanel)
+
+        MainActivity.currentActivityRef = this
     }
 
     override fun onStart() {
@@ -34,7 +36,10 @@ class OpponentSelectionActivity : AppCompatActivity() {
     }
 
     public fun createSendList() {
-        panel.removeAllViews()
+
+        if (panel.childCount > 0) {
+            panel.removeAllViews()
+        }
 
         for (client in clients) {
 
