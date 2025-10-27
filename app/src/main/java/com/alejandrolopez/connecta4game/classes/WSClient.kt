@@ -167,7 +167,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     ctrlPlay.handlePlayRejected(rejectedPieceId)
                 }*/
 
-                val arr = msgObj.getJSONArray(KeyValues.K_CLIENT_LIST.value)
+                /*val arr = msgObj.getJSONArray(KeyValues.K_CLIENT_LIST.value)
                 clients.clear()
 
                 var i = 0
@@ -183,7 +183,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
 
                     clients.add(cd)
                     i++
-                }
+                }*/
 
                 if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
                     (MainActivity.currentActivityRef as OpponentSelectionActivity).createSendList()
@@ -216,7 +216,6 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
 
             KeyValues.K_CLIENT_SEND_INVITATION.value -> {
                 val username = msgObj.getString(KeyValues.K_SEND_FROM.value)
-                (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
 
                 /*if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
                     (MainActivity.currentActivityRef as OpponentSelectionActivity).showInvitationPopUp()
@@ -231,6 +230,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 json.put(KeyValues.K_VALUE.value, true)
 
                 wsClient.send(json.toString())
+                (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
             }
 
             KeyValues.K_CLIENT_ANSWER_INVITATION.value -> {

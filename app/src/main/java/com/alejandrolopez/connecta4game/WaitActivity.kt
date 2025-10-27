@@ -40,7 +40,8 @@ class WaitActivity: AppCompatActivity() {
     }
 
     public fun setCounter(value : Int) {
-        Log.d("ABC", "SetCounter " + value)
-        counter.setText(value)
+        runOnUiThread {
+            counter.text = value.toString()
+        }
     }
 }
