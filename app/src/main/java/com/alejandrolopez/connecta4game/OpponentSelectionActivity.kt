@@ -1,30 +1,28 @@
 package com.alejandrolopez.connecta4game
 
-import android.app.Notification
+import android.app.Fragment
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.app.Person
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
+import com.alejandrolopez.connecta4game.fragments.ReceiveInvitationFragment
 import com.alejandrolopez.connecta4game.fragments.SendInvitationFragment
 
 class OpponentSelectionActivity : AppCompatActivity() {
 
-    private lateinit var panel : LinearLayout
+    private lateinit var panelSend : LinearLayout
+    private lateinit var panelReceive : LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +34,8 @@ class OpponentSelectionActivity : AppCompatActivity() {
             insets
         }
 
-        panel = this.findViewById<LinearLayout>(R.id.sendInvitationPanel)
+        panelSend = this.findViewById<LinearLayout>(R.id.sendInvitationPanel)
+        panelReceive = this.findViewById<LinearLayout>(R.id.receiveInvitationPanel)
 
         MainActivity.currentActivityRef = this
     }
@@ -49,8 +48,8 @@ class OpponentSelectionActivity : AppCompatActivity() {
 
     public fun createSendList() {
 
-        if (panel.childCount > 0) {
-            panel.removeAllViews()
+        if (panelSend.childCount > 0) {
+            panelSend.removeAllViews()
         }
 
         for (client in clients) {
@@ -67,34 +66,34 @@ class OpponentSelectionActivity : AppCompatActivity() {
         }
     }
 
-    public fun showInvitationPopUp(name : String) {
-
-
+    public fun addInvitation (name : String) {
+        val fragment = ReceiveInvitationFragment()
+        supportFragmentManager.beginTransaction()
+            .add(R.id.receiveInvitationPanel, fragment)
+            .runOnCommit {
+                fragment.setName(name)
+            }
+            .commit()
     }
 
-    fun showFloatingPopup() {
-        val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    public fun removeInvitations() {
+        for (v in panelReceive.children) {
+            (v as ReceiveInvitationFragment).declineInvitation()
+        }
 
-        // Inflamos el layout
-        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val layout = inflater.inflate(R.layout.fragment_receive_invitation, null)
+        panelReceive.removeAllViews()
+    }
 
-        // Establecemos las propiedades de la ventana flotante
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            PixelFormat.TRANSLUCENT
-        )
+    public fun removeInvitation(view : View) {
+        panelReceive.removeView(view)
+    }
 
-        params.x = 100
-        params.y = 100
-
-        windowManager.addView(layout, params)
-
-        layout.setOnClickListener {
-            windowManager.removeView(layout)
+    public fun removeInvitation(name : String) {
+        for (v in panelReceive.children) {
+            if ((v as ReceiveInvitationFragment).getName().equals(name)) {
+                panelReceive.removeView(v)
+                break
+            }
         }
     }
 

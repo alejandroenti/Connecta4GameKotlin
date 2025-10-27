@@ -217,20 +217,9 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             KeyValues.K_CLIENT_SEND_INVITATION.value -> {
                 val username = msgObj.getString(KeyValues.K_SEND_FROM.value)
 
-                /*if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
-                    (MainActivity.currentActivityRef as OpponentSelectionActivity).showInvitationPopUp()
-                }*/
-
-                opponentName = username
-
-                var json : JSONObject = JSONObject()
-                json.put(KeyValues.K_TYPE.value, KeyValues.K_CLIENT_ANSWER_INVITATION.value)
-                json.put(KeyValues.K_SEND_FROM.value, username)
-                json.put(KeyValues.K_SEND_TO.value, clientName)
-                json.put(KeyValues.K_VALUE.value, true)
-
-                wsClient.send(json.toString())
-                (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
+                if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).addInvitation(username)
+                }
             }
 
             KeyValues.K_CLIENT_ANSWER_INVITATION.value -> {
@@ -239,7 +228,9 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 val value : Boolean = msgObj.getString(KeyValues.K_VALUE.value).toBoolean()
 
                 if (!value) {
-                    // Reactivar botón para enviar invitación
+                    if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                        (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitation(user)
+                    }
                     return
                 }
 

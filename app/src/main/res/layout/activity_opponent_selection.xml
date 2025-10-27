@@ -19,6 +19,22 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
+        android:layout_width="363dp"
+        android:layout_height="440dp"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3">
+
+        <LinearLayout
+            android:id="@+id/receiveInvitationPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="362dp"
         android:layout_height="549dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -30,7 +46,7 @@
             android:id="@+id/sendInvitationPanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textView4"
