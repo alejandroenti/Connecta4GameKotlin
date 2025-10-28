@@ -222,18 +222,18 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 }
             }
 
-            KeyValues.K_CLIENT_ANSWER_INVITATION.value -> {
-                println(msgObj)
-                val user : String = msgObj.getString(KeyValues.K_SEND_TO.value)
+            "clientAnswerInvitation" -> {
+                val user : String = msgObj.getString(KeyValues.K_SEND_FROM.value)
                 val value : Boolean = msgObj.getString(KeyValues.K_VALUE.value).toBoolean()
 
                 if (!value) {
                     if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
-                        (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitation(user)
+                        (MainActivity.currentActivityRef as OpponentSelectionActivity).enbleSendInvitation(user)
                     }
                     return
                 }
 
+                (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitations()
                 (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
             }
         }
