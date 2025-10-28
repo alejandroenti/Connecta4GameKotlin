@@ -24,7 +24,7 @@
 
     <TextView
         android:id="@+id/usernName"
-        android:layout_width="263dp"
+        android:layout_width="218dp"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:padding="12dp"
@@ -39,7 +39,10 @@
         android:layout_height="72dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="0"
-        android:backgroundTint="@color/blue_sky"
+
+        android:background="@color/blue_sky"
+        android:backgroundTint="@color/white"
+        android:backgroundTintMode="multiply"
         android:contentDescription="Send invitation"
         android:scaleType="fitXY"
         app:srcCompat="@drawable/ic_send"

@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.alejandrolopez.connecta4game.MainActivity
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
+import com.alejandrolopez.connecta4game.MainActivity.Companion.opponentName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.wsClient
 import com.alejandrolopez.connecta4game.OpponentSelectionActivity
 import com.alejandrolopez.connecta4game.R
@@ -40,13 +41,17 @@ class ReceiveInvitationFragment : Fragment() {
         btnAccept.setOnClickListener {
             var json : JSONObject = JSONObject()
             json.put(KeyValues.K_TYPE.value, KeyValues.K_CLIENT_ANSWER_INVITATION.value)
-            json.put(KeyValues.K_SEND_FROM.value, userName.text)
-            json.put(KeyValues.K_SEND_TO.value, clientName)
+            json.put(KeyValues.K_SEND_TO.value, userName.text.toString())
+            json.put(KeyValues.K_SEND_FROM.value, clientName)
             json.put(KeyValues.K_VALUE.value, true)
 
             wsClient.send(json.toString())
 
+            opponentName = userName.text.toString()
+
             if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitation(userName.text.toString())
+                (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitations()
                 (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
             }
         }
@@ -67,10 +72,15 @@ class ReceiveInvitationFragment : Fragment() {
     public fun declineInvitation() {
         var json : JSONObject = JSONObject()
         json.put(KeyValues.K_TYPE.value, KeyValues.K_CLIENT_ANSWER_INVITATION.value)
-        json.put(KeyValues.K_SEND_FROM.value, userName.text)
-        json.put(KeyValues.K_SEND_TO.value, clientName)
+        json.put(KeyValues.K_SEND_TO.value, userName.text.toString())
+        json.put(KeyValues.K_SEND_FROM.value, clientName)
         json.put(KeyValues.K_VALUE.value, false)
 
         wsClient.send(json.toString())
+
+        if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+            (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitation(userName.text.toString())
+            (MainActivity.currentActivityRef as OpponentSelectionActivity).enbleSendInvitation(userName.text.toString())
+        }
     }
 }

@@ -38,6 +38,13 @@ class OpponentSelectionActivity : AppCompatActivity() {
         panelReceive = this.findViewById<LinearLayout>(R.id.receiveInvitationPanel)
 
         MainActivity.currentActivityRef = this
+
+        for (f in supportFragmentManager.fragments) {
+            supportFragmentManager.beginTransaction()
+                .remove(f)
+                .commit()
+            break
+        }
     }
 
     override fun onStart() {
@@ -74,25 +81,48 @@ class OpponentSelectionActivity : AppCompatActivity() {
                 fragment.setName(name)
             }
             .commit()
+
+        disableSendInvitation(name)
+    }
+
+    public fun disableSendInvitation(name : String) {
+        for (f in supportFragmentManager.fragments) {
+            if ((f is SendInvitationFragment)) {
+                if ((f as SendInvitationFragment).getName().equals(name)) {
+                    (f as SendInvitationFragment).disableBtn()
+                }
+            }
+        }
+    }
+
+    public fun enbleSendInvitation(name : String) {
+        for (f in supportFragmentManager.fragments) {
+            if ((f is SendInvitationFragment)) {
+                if ((f as SendInvitationFragment).getName().equals(name)) {
+                    (f as SendInvitationFragment).enableBtn()
+                    break
+                }
+            }
+        }
     }
 
     public fun removeInvitations() {
-        for (v in panelReceive.children) {
-            (v as ReceiveInvitationFragment).declineInvitation()
+        for (f in supportFragmentManager.fragments) {
+            if ((f is ReceiveInvitationFragment)) {
+                (f as ReceiveInvitationFragment).declineInvitation()
+            }
         }
-
-        panelReceive.removeAllViews()
-    }
-
-    public fun removeInvitation(view : View) {
-        panelReceive.removeView(view)
     }
 
     public fun removeInvitation(name : String) {
-        for (v in panelReceive.children) {
-            if ((v as ReceiveInvitationFragment).getName().equals(name)) {
-                panelReceive.removeView(v)
-                break
+        for (f in supportFragmentManager.fragments) {
+            if ((f is ReceiveInvitationFragment)) {
+                if ((f as ReceiveInvitationFragment).getName().equals(name)) {
+                    supportFragmentManager.beginTransaction()
+                        .remove(f)
+                        .commit()
+                    break
+                }
             }
         }
     }
