@@ -48,6 +48,10 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
     private fun wsMessage(response: String) {
         val msgObj = JSONObject(response)
 
+        if (msgObj.getString(KeyValues.K_TYPE.value).equals("clientAnswerInvitation")) {
+            Log.d("WSMEssageDebug", msgObj.toString())
+        }
+
         when (msgObj.getString(KeyValues.K_TYPE.value)) {
             KeyValues.K_CLIENT_NAME.value -> clientName = msgObj.getString(KeyValues.K_VALUE.value)
             KeyValues.K_SERVER_DATA.value -> {
@@ -222,7 +226,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 }
             }
 
-            "clientAnswerInvitation" -> {
+            KeyValues.K_CLIENT_SEND_INVITATION.value -> {
                 val user : String = msgObj.getString(KeyValues.K_SEND_FROM.value)
                 val value : Boolean = msgObj.getString(KeyValues.K_VALUE.value).toBoolean()
 
@@ -232,6 +236,8 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     }
                     return
                 }
+
+                opponentName = user
 
                 (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitations()
                 (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
