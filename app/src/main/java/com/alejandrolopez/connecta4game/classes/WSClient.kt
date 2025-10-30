@@ -117,7 +117,6 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             }
 
             KeyValues.K_PLAY_ACCEPTED.value -> {
-                val currentTurn = msgObj.getString(KeyValues.K_PLAYER_TURN.value)
                 val pieceId = msgObj.getString(KeyValues.K_PIECE_ID.value)
                 val col = msgObj.getInt(KeyValues.K_COLUMN.value)
                 val row = msgObj.getInt(KeyValues.K_ROW.value)
@@ -137,7 +136,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 }
 
                 if (MainActivity.currentActivityRef is PlayActivity) {
-                    (MainActivity.currentActivityRef as PlayActivity).handlePlayAccepted(currentTurn, pieceId, row, col, winner, winningLineCoords)
+                    (MainActivity.currentActivityRef as PlayActivity).handlePlayAccepted(pieceId, row, col, winner, winningLineCoords)
                 }
 
                 // Si el juego terminó

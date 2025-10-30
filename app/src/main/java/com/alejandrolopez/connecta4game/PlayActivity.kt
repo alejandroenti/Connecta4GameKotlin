@@ -164,9 +164,9 @@ class PlayActivity : AppCompatActivity() {
         }
     }
 
-    public fun handlePlayAccepted(playerName : String, pieceId : String, row : Int, column : Int, winner : String?, winningLineCoords : IntArray?) {
+    public fun handlePlayAccepted(pieceId : String, row : Int, column : Int, winner : String?, winningLineCoords : IntArray?) {
         if (winner.isNullOrEmpty()) {
-            fillChip(row, column, playerName)
+            fillChip(row, column, turns.get(turn))
             turn = (turn + 1) % 2
             setTurn(COLOR_TURNS.get(turn))
         }
