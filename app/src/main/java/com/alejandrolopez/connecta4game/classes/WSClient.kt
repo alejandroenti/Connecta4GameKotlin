@@ -226,7 +226,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 }
             }
 
-            KeyValues.K_CLIENT_SEND_INVITATION.value -> {
+            KeyValues.K_CLIENT_ANSWER_INVITATION.value -> {
                 val user : String = msgObj.getString(KeyValues.K_SEND_FROM.value)
                 val value : Boolean = msgObj.getString(KeyValues.K_VALUE.value).toBoolean()
 

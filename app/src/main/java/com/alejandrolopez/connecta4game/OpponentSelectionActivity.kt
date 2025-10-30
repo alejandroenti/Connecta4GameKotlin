@@ -18,8 +18,11 @@ import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
 import com.alejandrolopez.connecta4game.fragments.ReceiveInvitationFragment
 import com.alejandrolopez.connecta4game.fragments.SendInvitationFragment
+import androidx.core.view.isNotEmpty
 
 class OpponentSelectionActivity : AppCompatActivity() {
+
+    private var users : ArrayList<SendInvitationFragment> = ArrayList<SendInvitationFragment>()
 
     private lateinit var panelSend : LinearLayout
     private lateinit var panelReceive : LinearLayout
@@ -39,6 +42,7 @@ class OpponentSelectionActivity : AppCompatActivity() {
 
         MainActivity.currentActivityRef = this
 
+        users.clear()
         for (f in supportFragmentManager.fragments) {
             supportFragmentManager.beginTransaction()
                 .remove(f)
@@ -55,7 +59,7 @@ class OpponentSelectionActivity : AppCompatActivity() {
 
     public fun createSendList() {
 
-        if (panelSend.childCount > 0) {
+        if (panelSend.isNotEmpty()) {
             panelSend.removeAllViews()
         }
 
@@ -64,6 +68,7 @@ class OpponentSelectionActivity : AppCompatActivity() {
             if (client.name.equals(clientName)) continue
 
             val fragment = SendInvitationFragment()
+            users.add(fragment)
             supportFragmentManager.beginTransaction()
                 .add(R.id.sendInvitationPanel, fragment)
                 .runOnCommit {
@@ -88,8 +93,8 @@ class OpponentSelectionActivity : AppCompatActivity() {
     public fun disableSendInvitation(name : String) {
         for (f in supportFragmentManager.fragments) {
             if ((f is SendInvitationFragment)) {
-                if ((f as SendInvitationFragment).getName().equals(name)) {
-                    (f as SendInvitationFragment).disableBtn()
+                if (f.getName().equals(name)) {
+                    f.disableBtn()
                 }
             }
         }
@@ -98,8 +103,10 @@ class OpponentSelectionActivity : AppCompatActivity() {
     public fun enbleSendInvitation(name : String) {
         for (f in supportFragmentManager.fragments) {
             if ((f is SendInvitationFragment)) {
-                if ((f as SendInvitationFragment).getName().equals(name)) {
-                    (f as SendInvitationFragment).enableBtn()
+                if (f.getName().equals(name)) {
+                    runOnUiThread {
+                        f.enableBtn()
+                    }
                     break
                 }
             }
@@ -109,7 +116,7 @@ class OpponentSelectionActivity : AppCompatActivity() {
     public fun removeInvitations() {
         for (f in supportFragmentManager.fragments) {
             if ((f is ReceiveInvitationFragment)) {
-                (f as ReceiveInvitationFragment).declineInvitation()
+                f.declineInvitation()
             }
         }
     }
@@ -117,7 +124,7 @@ class OpponentSelectionActivity : AppCompatActivity() {
     public fun removeInvitation(name : String) {
         for (f in supportFragmentManager.fragments) {
             if ((f is ReceiveInvitationFragment)) {
-                if ((f as ReceiveInvitationFragment).getName().equals(name)) {
+                if (f.getName().equals(name)) {
                     supportFragmentManager.beginTransaction()
                         .remove(f)
                         .commit()
