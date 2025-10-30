@@ -122,7 +122,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 val col = msgObj.getInt(KeyValues.K_COLUMN.value)
                 val row = msgObj.getInt(KeyValues.K_ROW.value)
                 val gameEnded = msgObj.getBoolean(KeyValues.K_GAME_ENDED.value)
-                val winner = msgObj.optString(KeyValues.K_WINNER.value, null)
+                val winner = msgObj.optString(KeyValues.K_WINNER.value, "")
 
                 // Procesar coordenadas de línea ganadora si existen
                 lateinit var winningLineCoords: IntArray
@@ -161,30 +161,11 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             }
 
             KeyValues.K_PLAY_REJECTED.value -> {
-                val rejectedPieceId = msgObj.getString(KeyValues.K_PIECE_ID.value)
                 val reason = msgObj.optString(KeyValues.K_REASON.value, "Invalid move")
 
                 if (MainActivity.currentActivityRef is PlayActivity) {
                     (MainActivity.currentActivityRef as PlayActivity).handlePlayRejected(reason)
                 }
-
-                /*val arr = msgObj.getJSONArray(KeyValues.K_CLIENT_LIST.value)
-                clients.clear()
-
-                var i = 0
-                while (i < arr.length()) {
-                    val obj = arr.getJSONObject(i)
-                    println(obj)
-                    val name = obj.getString(KeyValues.K_NAME.value)
-                    val color = obj.getString(KeyValues.K_COLOR.value)
-                    val isPlaying = obj.getBoolean(KeyValues.K_PLAY.value)
-
-                    val cd: ClientData = ClientData(name, color)
-                    cd.SetIsPlaying(isPlaying)
-
-                    clients.add(cd)
-                    i++
-                }*/
             }
 
             KeyValues.K_CLIENTS_LIST.value -> {

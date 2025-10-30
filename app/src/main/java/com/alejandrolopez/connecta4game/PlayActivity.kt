@@ -1,7 +1,6 @@
 package com.alejandrolopez.connecta4game
 
 import android.graphics.PorterDuff
-import android.media.Image
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -16,11 +15,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.transition.Visibility
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
 import com.alejandrolopez.connecta4game.MainActivity.Companion.opponentName
 import com.alejandrolopez.connecta4game.classes.ClientData
+import com.alejandrolopez.connecta4game.classes.KeyValues
+import org.json.JSONObject
+
 
 class PlayActivity : AppCompatActivity() {
 
@@ -29,6 +30,13 @@ class PlayActivity : AppCompatActivity() {
 
     private var tableRows : MutableList<TableRow> = mutableListOf<TableRow>()
     private var players : HashMap<String, ClientData> = HashMap<String, ClientData>()
+    private lateinit var turns : Array<String>
+    private val COLOR_TURNS : Array<Int> = arrayOf(R.color.red, R.color.yellow)
+
+    private var turn : Int = 0
+    private lateinit var pieceID : String
+    private var pieceCount : Int = 0
+
 
     private lateinit var board : TableLayout
     private lateinit var title : TextView
@@ -56,6 +64,8 @@ class PlayActivity : AppCompatActivity() {
         setTitle()
         turnPlay.setColorFilter(ContextCompat.getColor(this, R.color.black), PorterDuff.Mode.SRC_IN)
         initializeBoard()
+
+        MainActivity.currentActivityRef = this
     }
 
     private fun initializeBoard() {
@@ -70,7 +80,12 @@ class PlayActivity : AppCompatActivity() {
         for (i in 0..NUM_COLS - 1) {
             val button : Button = Button(this)
             button.setOnClickListener {
-                // Send message to server
+                val msg = JSONObject()
+                msg.put(KeyValues.K_TYPE.value, KeyValues.K_CLIENT_REQUEST_PLAY.value)
+                msg.put(KeyValues.K_PIECE_ID.value, pieceID + pieceCount.toString())
+                msg.put(KeyValues.K_COLUMN.value, i)
+
+                MainActivity.wsClient.send(msg.toString())
             }
             button.text = (NUM_ROWS - 1).toString()
             button.gravity = Gravity.CENTER
@@ -104,24 +119,33 @@ class PlayActivity : AppCompatActivity() {
 
     private fun getPlayers() {
         for (client in clients) {
-            if (client.name.equals(clientName) || client.name.equals(opponentName)) {
+            if (client.name.equals(clientName)) {
                 players.put(client.name!!, client)
+                pieceID = client.color!!.get(0) + "_"
+                if (client.color.equals("RED")) {
+                    turns = arrayOf(clientName, opponentName)
+                }
+            }
+
+            if (client.name.equals(opponentName)) {
+                players.put(client.name!!, client)
+                if (client.color.equals("RED")) {
+
+                    turns = arrayOf(opponentName, clientName)
+                }
             }
         }
+
+        setTurn(COLOR_TURNS.get(turn))
     }
 
-    private fun setTurn(name : String, color : String) {
-        playerTurn.text = name
+    private fun setTurn(color : Int) {
+        playerTurn.text = turns.get(turn)
+        colorTurn.setColorFilter(ContextCompat.getColor(this, color), PorterDuff.Mode.SRC_IN)
 
-        if (color.equals("RED")) {
-            colorTurn.setColorFilter(ContextCompat.getColor(this, R.color.red), PorterDuff.Mode.SRC_IN)
-        }
-        else {
-            colorTurn.setColorFilter(ContextCompat.getColor(this, R.color.yellow), PorterDuff.Mode.SRC_IN)
-        }
-
-        if (name.equals(clientName)) {
+        if (turns.get(turn).equals(clientName)) {
             playerTurn.visibility = View.VISIBLE
+            pieceCount++
         }
         else {
             playerTurn.visibility = View.INVISIBLE
@@ -140,9 +164,11 @@ class PlayActivity : AppCompatActivity() {
         }
     }
 
-    public fun handlePlayAccepted(turn : String, pieceId : String, row : Int, column : Int, winner : String?, winningLineCoords : IntArray?) {
+    public fun handlePlayAccepted(playerName : String, pieceId : String, row : Int, column : Int, winner : String?, winningLineCoords : IntArray?) {
         if (winner.isNullOrEmpty()) {
-            fillChip(row, column, turn)
+            fillChip(row, column, playerName)
+            turn = (turn + 1) % 2
+            setTurn(COLOR_TURNS.get(turn))
         }
     }
 
