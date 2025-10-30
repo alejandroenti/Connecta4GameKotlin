@@ -1,12 +1,21 @@
 package com.alejandrolopez.connecta4game.classes
 
+import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import android.util.Log
+import androidx.core.app.ActivityCompat.startActivityForResult
+import com.alejandrolopez.connecta4game.ConnectionActivity
 import com.alejandrolopez.connecta4game.MainActivity
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
 import com.alejandrolopez.connecta4game.MainActivity.Companion.myColor
 import com.alejandrolopez.connecta4game.MainActivity.Companion.objects
+import com.alejandrolopez.connecta4game.MainActivity.Companion.opponentName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.tracker
+import com.alejandrolopez.connecta4game.MainActivity.Companion.wsClient
+import com.alejandrolopez.connecta4game.OpponentSelectionActivity
+import com.alejandrolopez.connecta4game.WaitActivity
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import org.json.JSONObject
@@ -14,6 +23,7 @@ import java.lang.Exception
 import java.net.URI
 
 class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
+
     override fun onOpen(handshakedata: ServerHandshake?) {
         Log.d("WSConnection", "[*] Opened Connection!")
         var msgObject : JSONObject = JSONObject()
@@ -24,7 +34,6 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
     }
 
     override fun onMessage(message: String?) {
-        Log.d("WSConnection", "[*] Message received!")
         wsMessage(message!!)
     }
 
@@ -39,10 +48,14 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
     private fun wsMessage(response: String) {
         val msgObj = JSONObject(response)
 
+        if (msgObj.getString(KeyValues.K_TYPE.value).equals("clientAnswerInvitation")) {
+            Log.d("WSMEssageDebug", msgObj.toString())
+        }
+
         when (msgObj.getString(KeyValues.K_TYPE.value)) {
             KeyValues.K_CLIENT_NAME.value -> clientName = msgObj.getString(KeyValues.K_VALUE.value)
             KeyValues.K_SERVER_DATA.value -> {
-                clientName = msgObj.getString(KeyValues.K_VALUE.value)
+                //clientName = msgObj.getString(KeyValues.K_VALUE.value)
 
                 val arrClients = msgObj.getJSONArray(KeyValues.K_CLIENT_LIST.value)
                 val newClients: MutableList<ClientData> = ArrayList<ClientData>()
@@ -99,13 +112,12 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     (UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).rejectAllPetions()
                     UtilsViews.setView("ViewWait")
                 }*/
-
                 val value = msgObj.getInt(KeyValues.K_VALUE.value)
-                val txt = value.toString()
+
                 if (value == 0) {
                     //UtilsViews.setViewAnimating("ViewPlay")
                 }
-                //ctrlWait.txtTitle.setText(txt)
+                (MainActivity.currentActivityRef as WaitActivity).setCounter(value)
             }
 
             KeyValues.K_PLAY_ACCEPTED.value -> {
@@ -159,7 +171,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     ctrlPlay.handlePlayRejected(rejectedPieceId)
                 }*/
 
-                val arr = msgObj.getJSONArray(KeyValues.K_CLIENT_LIST.value)
+                /*val arr = msgObj.getJSONArray(KeyValues.K_CLIENT_LIST.value)
                 clients.clear()
 
                 var i = 0
@@ -175,9 +187,11 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
 
                     clients.add(cd)
                     i++
-                }
+                }*/
 
-                //(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).loadSendList()
+                if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).createSendList()
+                }
             }
 
             KeyValues.K_CLIENTS_LIST.value -> {
@@ -199,29 +213,34 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     i++
                 }
 
-                //(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).loadSendList()
+                if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).createSendList()
+                }
             }
 
             KeyValues.K_CLIENT_SEND_INVITATION.value -> {
                 val username = msgObj.getString(KeyValues.K_SEND_FROM.value)
 
-                /*(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).addFromReceiveList(
-                    username
-                )
-                (UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).addToSendInvitation(
-                    username
-                )*/
+                if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).addInvitation(username)
+                }
             }
 
             KeyValues.K_CLIENT_ANSWER_INVITATION.value -> {
-                println(msgObj)
-                val user = msgObj.getString(KeyValues.K_SEND_TO.value)
-                /*(UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).reactivateFromSendList(
-                    user
-                )
-                (UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).removeFromSendInvitation(
-                    user
-                )*/
+                val user : String = msgObj.getString(KeyValues.K_SEND_FROM.value)
+                val value : Boolean = msgObj.getString(KeyValues.K_VALUE.value).toBoolean()
+
+                if (!value) {
+                    if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                        (MainActivity.currentActivityRef as OpponentSelectionActivity).enbleSendInvitation(user)
+                    }
+                    return
+                }
+
+                opponentName = user
+
+                (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitations()
+                (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
             }
         }
     }

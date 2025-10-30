@@ -10,4 +10,7 @@
     <string name="activity_connection_btn_connect">Connect!</string>
     <string name="activity_connection_btn_server_local">Local</string>
     <string name="activity_connection_btn_server_proxmox">Proxmox</string>
+    <string name="activity_opponent_selection_name">Opponent Selection</string>
+    <string name="btn_accept">Accept</string>
+    <string name="btn_decline">Decline</string>
 </resources>

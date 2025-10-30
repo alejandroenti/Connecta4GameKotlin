@@ -1,5 +1,6 @@
 package com.alejandrolopez.connecta4game
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -10,6 +11,7 @@ import com.alejandrolopez.connecta4game.classes.GameObject
 import com.alejandrolopez.connecta4game.classes.WSClient
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.ref.WeakReference
 import java.net.URI
 
 
@@ -18,10 +20,13 @@ class MainActivity : AppCompatActivity() {
     companion object {
         public lateinit var wsClient : WSClient
         public lateinit var clientName : String
+        public lateinit var opponentName : String
         public lateinit var myColor : String
 
         public var clients : MutableList<ClientData> = ArrayList<ClientData>()
         public var objects: MutableList<GameObject> = ArrayList<GameObject>()
+
+        public var currentActivityRef: AppCompatActivity? = null
 
         public var tracker : ActivityTracker = ActivityTracker()
 
