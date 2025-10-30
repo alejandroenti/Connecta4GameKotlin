@@ -15,6 +15,7 @@ import com.alejandrolopez.connecta4game.MainActivity.Companion.opponentName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.tracker
 import com.alejandrolopez.connecta4game.MainActivity.Companion.wsClient
 import com.alejandrolopez.connecta4game.OpponentSelectionActivity
+import com.alejandrolopez.connecta4game.PlayActivity
 import com.alejandrolopez.connecta4game.WaitActivity
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
@@ -107,20 +108,16 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             }
 
             KeyValues.K_COUNTDOWN.value -> {
-                /*if (!UtilsViews.getActiveView().equals("ViewWait")) {
-                    // Rebutgem la resta de peticions
-                    (UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).rejectAllPetions()
-                    UtilsViews.setView("ViewWait")
-                }*/
                 val value = msgObj.getInt(KeyValues.K_VALUE.value)
 
                 if (value == 0) {
-                    //UtilsViews.setViewAnimating("ViewPlay")
+                    (MainActivity.currentActivityRef as WaitActivity).passToPlay()
                 }
                 (MainActivity.currentActivityRef as WaitActivity).setCounter(value)
             }
 
             KeyValues.K_PLAY_ACCEPTED.value -> {
+                val currentTurn = msgObj.getString(KeyValues.K_PLAYER_TURN.value)
                 val pieceId = msgObj.getString(KeyValues.K_PIECE_ID.value)
                 val col = msgObj.getInt(KeyValues.K_COLUMN.value)
                 val row = msgObj.getInt(KeyValues.K_ROW.value)
@@ -128,20 +125,20 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 val winner = msgObj.optString(KeyValues.K_WINNER.value, null)
 
                 // Procesar coordenadas de línea ganadora si existen
-                val winningLineCoords: IntArray? = null
+                lateinit var winningLineCoords: IntArray
                 if (msgObj.has(KeyValues.K_WINNING_LINE_COORDS.value) && !msgObj.isNull(KeyValues.K_WINNING_LINE_COORDS.value)) {
                     val coordsArray = msgObj.getJSONArray(KeyValues.K_WINNING_LINE_COORDS.value)
-                    //winningLineCoords = IntArray(coordsArray.length())
+                    winningLineCoords = IntArray(coordsArray.length())
                     var i = 0
                     while (i < coordsArray.length()) {
-                        //winningLineCoords[i] = coordsArray.getInt(i)
+                        winningLineCoords[i] = coordsArray.getInt(i)
                         i++
                     }
                 }
 
-                /*if (ctrlPlay != null) {
-                    ctrlPlay.handlePlayAccepted(pieceId, col, row, winner, winningLineCoords)
-                }*/
+                if (MainActivity.currentActivityRef is PlayActivity) {
+                    (MainActivity.currentActivityRef as PlayActivity).handlePlayAccepted(currentTurn, pieceId, row, col, winner, winningLineCoords)
+                }
 
                 // Si el juego terminó
                 if (gameEnded && winner != null) {
@@ -166,10 +163,10 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             KeyValues.K_PLAY_REJECTED.value -> {
                 val rejectedPieceId = msgObj.getString(KeyValues.K_PIECE_ID.value)
                 val reason = msgObj.optString(KeyValues.K_REASON.value, "Invalid move")
-                println("Play rejected: " + reason)
-                /*if (ctrlPlay != null) {
-                    ctrlPlay.handlePlayRejected(rejectedPieceId)
-                }*/
+
+                if (MainActivity.currentActivityRef is PlayActivity) {
+                    (MainActivity.currentActivityRef as PlayActivity).handlePlayRejected(reason)
+                }
 
                 /*val arr = msgObj.getJSONArray(KeyValues.K_CLIENT_LIST.value)
                 clients.clear()
@@ -188,10 +185,6 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     clients.add(cd)
                     i++
                 }*/
-
-                if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
-                    (MainActivity.currentActivityRef as OpponentSelectionActivity).createSendList()
-                }
             }
 
             KeyValues.K_CLIENTS_LIST.value -> {

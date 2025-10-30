@@ -25,5 +25,6 @@ enum class KeyValues (val value : String) {
     K_COLUMN("column"),
     K_ROW("row"),
     K_WINNER("winner"),
-    K_GAME_ENDED("gameEnded")
+    K_GAME_ENDED("gameEnded"),
+    K_PLAYER_TURN("playerTurn")
 }

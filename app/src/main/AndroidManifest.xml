@@ -27,6 +27,7 @@
         <activity android:name=".ConnectionActivity" />
         <activity android:name=".OpponentSelectionActivity" />
         <activity android:name=".WaitActivity" />
+        <activity android:name=".PlayActivity" />
     </application>
 
 </manifest>

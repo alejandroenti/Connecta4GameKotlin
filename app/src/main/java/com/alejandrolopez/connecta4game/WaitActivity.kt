@@ -1,5 +1,6 @@
 package com.alejandrolopez.connecta4game
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.LinearLayout
@@ -43,5 +44,10 @@ class WaitActivity: AppCompatActivity() {
         runOnUiThread {
             counter.text = value.toString()
         }
+    }
+
+    public fun passToPlay() {
+        val intent = Intent(this, PlayActivity::class.java)
+        startActivity(intent)
     }
 }
