@@ -83,24 +83,6 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     i++
                 }
                 objects = newObjects
-
-                /*
-                if (ctrlPlay != null) {
-                    ctrlPlay.updateGameState(msgObj)
-                }
-                 */
-
-                /*if (clients.size === 1) {
-                    ctrlWait.txtPlayer0.setText(clients.get(0).name)
-                } else if (clients.size > 1) {
-                    ctrlWait.txtPlayer0.setText(clients.get(0).name)
-                    ctrlWait.txtPlayer1.setText(clients.get(1).name)
-                    ctrlPlay.title.setText(clients.get(0).name + " vs " + clients.get(1).name)
-                }*/
-
-                /*if (UtilsViews.getActiveView().equals("ViewConfig")) {
-                    UtilsViews.setViewAnimating("ViewOpponentSelection")
-                }*/
             }
 
             KeyValues.K_COUNTDOWN.value -> {

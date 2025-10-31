@@ -1,8 +1,10 @@
 package com.alejandrolopez.connecta4game
 
+import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.util.Log
+import android.os.Looper
+import android.os.Handler
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -198,6 +200,25 @@ class PlayActivity : AppCompatActivity() {
         chip.setColorFilter(ContextCompat.getColor(this, color), PorterDuff.Mode.SRC_IN)
     }
 
+    private fun markWinningChips(winningLineCoords : IntArray) {
+        val startRow = winningLineCoords[0]
+        val startCol = winningLineCoords[1]
+        val endRow = winningLineCoords[2]
+        val endCol = winningLineCoords[3]
+
+        val rowStep = if (endRow > startRow) 1 else if (endRow < startRow) -1 else 0
+        val colStep = if (endCol > startCol) 1 else if (endCol < startCol) -1 else 0
+
+        var currentRow = startRow
+        var currentCol = startCol
+
+        for (i in 0..3) {
+            fillChip(currentRow, currentCol, R.color.green)
+            currentRow += rowStep
+            currentCol += colStep
+        }
+    }
+
     public fun handlePlayAccepted(pieceId : String, row : Int, column : Int, winner : String, winningLineCoords : IntArray?) {
         if (winner.equals("null")) {
             chips.getValue(pieceId).visibility = View.INVISIBLE
@@ -205,9 +226,24 @@ class PlayActivity : AppCompatActivity() {
             turn = (turn + 1) % 2
             setTurn(COLOR_TURNS.get(turn))
         }
+        else {
+            chips.getValue(pieceId).visibility = View.INVISIBLE
+            fillChip(row, column, COLOR_TURNS[turn])
+            markWinningChips(winningLineCoords!!)
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                passToResults()
+            }, 1500)
+        }
     }
 
     public fun handlePlayRejected(reason : String) {
         Toast.makeText(this, reason, Toast.LENGTH_LONG).show()
+    }
+
+    public fun passToResults() {
+        val intent = Intent(this, OpponentSelectionActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
