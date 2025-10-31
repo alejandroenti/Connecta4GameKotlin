@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         public lateinit var myColor : String
         public lateinit var winner : String
 
-        public var board : Array<Array<Char>> = Array(1) { Array(1) { ' ' } }
+        public var board: Array<Array<Char>>? = null
         public var clients : MutableList<ClientData> = ArrayList<ClientData>()
         public var objects: MutableList<GameObject> = ArrayList<GameObject>()
 

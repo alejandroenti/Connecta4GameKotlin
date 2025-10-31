@@ -74,12 +74,27 @@ class ResultsActivity : AppCompatActivity() {
             row.layoutParams = paramsRow
             row.gravity = Gravity.CENTER
             row.setBackgroundColor(ContextCompat.getColor(this, R.color.blue_navy))
+
+            var r = MainActivity.board?.get(i)
             for (j in 0..NUM_COLS - 1) {
                 var chipImage = ImageView(this)
                 chipImage.setImageResource(R.drawable.ic_chip)
                 chipImage.layoutParams = paramsColumn
                 chipImage.scaleType = ImageView.ScaleType.CENTER_INSIDE
                 chipImage.setPadding(10, 10, 10, 10)
+
+                var c = r!!.get(j)
+
+                if (c.equals('X')) {
+                    chipImage.setColorFilter(ContextCompat.getColor(this, R.color.red), PorterDuff.Mode.SRC_IN)
+                }
+                else if (c.equals('O')) {
+                    chipImage.setColorFilter(ContextCompat.getColor(this, R.color.yellow), PorterDuff.Mode.SRC_IN)
+                }
+                else if (c.equals('W')) {
+                    chipImage.setColorFilter(ContextCompat.getColor(this, R.color.green), PorterDuff.Mode.SRC_IN)
+                }
+
                 row.addView(chipImage)
             }
             board.addView(row)

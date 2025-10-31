@@ -34,7 +34,7 @@ class PlayActivity : AppCompatActivity() {
     private val CHIPS_NUM_COL = 14
 
 
-    private var boardValue : Array<Array<Char>> = Array(NUM_ROWS - 1) { Array(NUM_COLS) { ' ' } }
+    private var boardValue : Array<Array<Char>> = Array(NUM_ROWS) { Array(NUM_COLS) { ' ' } }
     private var tableRows : MutableList<TableRow> = mutableListOf<TableRow>()
     private var players : HashMap<String, ClientData> = HashMap<String, ClientData>()
     private var chips : HashMap<String, ImageView> = HashMap<String, ImageView>()
@@ -205,6 +205,8 @@ class PlayActivity : AppCompatActivity() {
         var r = tableRows.get(row + 1)
         var chip = r.getChildAt(column) as ImageView
         chip.setColorFilter(ContextCompat.getColor(this, color), PorterDuff.Mode.SRC_IN)
+
+        passToBoard(row, column)
     }
 
     private fun markWinningChips(winningLineCoords : IntArray) {
@@ -221,24 +223,27 @@ class PlayActivity : AppCompatActivity() {
 
         for (i in 0..3) {
             fillChip(currentRow, currentCol, R.color.green)
+            var r = boardValue.get(currentRow)
+            r.set(currentCol, 'W')
             currentRow += rowStep
             currentCol += colStep
         }
     }
 
-    private fun passTOBoard(row : Int, col : Int) {
+    private fun passToBoard(row : Int, col : Int) {
         var r = boardValue.get(row)
-        var c = r.get(col)
+        var c =
         if (COLOR_TURNS[turn] == R.color.red) {
-            c = 'X'
+            r.set(col, 'X')
         }
         else {
-            c = 'O'
+            r.set(col, 'O')
         }
     }
 
     private fun passBoard() {
-        MainActivity.board = boardValue
+        val boardValueCopy = boardValue.map { it.copyOf() }.toTypedArray()
+        MainActivity.board = boardValueCopy
     }
 
     public fun handlePlayAccepted(pieceId : String, row : Int, column : Int, winner : String, winningLineCoords : IntArray?) {
