@@ -1,16 +1,13 @@
-package com.alejandrolopez.connecta4game
+package com.alejandrolopez.connecta4game.Activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
-import com.alejandrolopez.connecta4game.MainActivity.Companion.opponentName
+import com.alejandrolopez.connecta4game.R
 
 class WaitActivity: AppCompatActivity() {
 
@@ -34,8 +31,8 @@ class WaitActivity: AppCompatActivity() {
         player2 = findViewById<TextView>(R.id.player2Text)
 
         counter.setText("3")
-        player1.setText(clientName)
-        player2.setText(opponentName)
+        player1.setText(MainActivity.Companion.clientName)
+        player2.setText(MainActivity.Companion.opponentName)
 
         MainActivity.currentActivityRef = this
     }

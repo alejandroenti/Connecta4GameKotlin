@@ -1,4 +1,4 @@
-package com.alejandrolopez.connecta4game
+package com.alejandrolopez.connecta4game.Activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.alejandrolopez.connecta4game.R
 import com.google.android.material.textfield.TextInputEditText
 
 class ConnectionActivity : AppCompatActivity() {

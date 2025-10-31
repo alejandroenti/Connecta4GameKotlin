@@ -1,22 +1,16 @@
 package com.alejandrolopez.connecta4game.classes
 
-import android.content.Context
-import android.content.Intent
-import android.provider.Settings
 import android.util.Log
-import androidx.core.app.ActivityCompat.startActivityForResult
-import com.alejandrolopez.connecta4game.ConnectionActivity
-import com.alejandrolopez.connecta4game.MainActivity
-import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
-import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
-import com.alejandrolopez.connecta4game.MainActivity.Companion.myColor
-import com.alejandrolopez.connecta4game.MainActivity.Companion.objects
-import com.alejandrolopez.connecta4game.MainActivity.Companion.opponentName
-import com.alejandrolopez.connecta4game.MainActivity.Companion.tracker
-import com.alejandrolopez.connecta4game.MainActivity.Companion.wsClient
-import com.alejandrolopez.connecta4game.OpponentSelectionActivity
-import com.alejandrolopez.connecta4game.PlayActivity
-import com.alejandrolopez.connecta4game.WaitActivity
+import com.alejandrolopez.connecta4game.Activities.MainActivity
+import com.alejandrolopez.connecta4game.Activities.MainActivity.Companion.clientName
+import com.alejandrolopez.connecta4game.Activities.MainActivity.Companion.clients
+import com.alejandrolopez.connecta4game.Activities.MainActivity.Companion.myColor
+import com.alejandrolopez.connecta4game.Activities.MainActivity.Companion.objects
+import com.alejandrolopez.connecta4game.Activities.MainActivity.Companion.opponentName
+import com.alejandrolopez.connecta4game.Activities.MainActivity.Companion.wsClient
+import com.alejandrolopez.connecta4game.Activities.OpponentSelectionActivity
+import com.alejandrolopez.connecta4game.Activities.PlayActivity
+import com.alejandrolopez.connecta4game.Activities.WaitActivity
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import org.json.JSONObject
@@ -30,7 +24,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
         var msgObject : JSONObject = JSONObject()
         msgObject.put(KeyValues.K_TYPE.value, KeyValues.K_SET_PLAYER_NAME.value)
         msgObject.put(KeyValues.K_NAME.value, clientName)
-        MainActivity.wsClient.send(msgObject.toString())
+        wsClient.send(msgObject.toString())
         Log.d("WSConnection", "[*] Message to server: " + msgObject.toString())
     }
 

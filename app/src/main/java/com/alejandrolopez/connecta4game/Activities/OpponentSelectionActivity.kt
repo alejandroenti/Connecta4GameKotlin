@@ -1,24 +1,16 @@
-package com.alejandrolopez.connecta4game
+package com.alejandrolopez.connecta4game.Activities
 
-import android.app.Fragment
-import android.content.Context
 import android.content.Intent
-import android.graphics.PixelFormat
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.WindowManager
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.children
-import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
-import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
 import com.alejandrolopez.connecta4game.fragments.ReceiveInvitationFragment
 import com.alejandrolopez.connecta4game.fragments.SendInvitationFragment
 import androidx.core.view.isNotEmpty
+import com.alejandrolopez.connecta4game.R
 
 class OpponentSelectionActivity : AppCompatActivity() {
 
@@ -63,9 +55,9 @@ class OpponentSelectionActivity : AppCompatActivity() {
             panelSend.removeAllViews()
         }
 
-        for (client in clients) {
+        for (client in MainActivity.Companion.clients) {
 
-            if (client.name.equals(clientName)) continue
+            if (client.name.equals(MainActivity.Companion.clientName)) continue
 
             val fragment = SendInvitationFragment()
             users.add(fragment)

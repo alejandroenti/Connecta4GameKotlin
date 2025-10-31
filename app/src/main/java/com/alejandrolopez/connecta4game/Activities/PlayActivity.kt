@@ -1,7 +1,8 @@
-package com.alejandrolopez.connecta4game
+package com.alejandrolopez.connecta4game.Activities
 
 import android.content.Intent
 import android.graphics.PorterDuff
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Looper
 import android.os.Handler
@@ -18,9 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
-import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
-import com.alejandrolopez.connecta4game.MainActivity.Companion.opponentName
+import com.alejandrolopez.connecta4game.R
 import com.alejandrolopez.connecta4game.classes.ClientData
 import com.alejandrolopez.connecta4game.classes.KeyValues
 import org.json.JSONObject
@@ -34,6 +33,8 @@ class PlayActivity : AppCompatActivity() {
     private val CHIPS_NUM_ROWS = 3
     private val CHIPS_NUM_COL = 14
 
+
+    private var boardValue : Array<Array<Char>> = Array(NUM_ROWS) { Array(NUM_COLS) { ' ' } }
     private var tableRows : MutableList<TableRow> = mutableListOf<TableRow>()
     private var players : HashMap<String, ClientData> = HashMap<String, ClientData>()
     private var chips : HashMap<String, ImageView> = HashMap<String, ImageView>()
@@ -160,20 +161,26 @@ class PlayActivity : AppCompatActivity() {
     }
 
     private fun getPlayers() {
-        for (client in clients) {
-            if (client.name.equals(clientName)) {
+        for (client in MainActivity.Companion.clients) {
+            if (client.name.equals(MainActivity.Companion.clientName)) {
                 players.put(client.name!!, client)
                 pieceID = client.color!!.get(0) + "_"
                 if (client.color.equals("RED")) {
-                    turns = arrayOf(clientName, opponentName)
+                    turns = arrayOf(
+                        MainActivity.Companion.clientName,
+                        MainActivity.Companion.opponentName
+                    )
                 }
             }
 
-            if (client.name.equals(opponentName)) {
+            if (client.name.equals(MainActivity.Companion.opponentName)) {
                 players.put(client.name!!, client)
                 if (client.color.equals("RED")) {
 
-                    turns = arrayOf(opponentName, clientName)
+                    turns = arrayOf(
+                        MainActivity.Companion.opponentName,
+                        MainActivity.Companion.clientName
+                    )
                 }
             }
         }
@@ -185,7 +192,7 @@ class PlayActivity : AppCompatActivity() {
         playerTurn.text = turns.get(turn)
         colorTurn.setColorFilter(ContextCompat.getColor(this, color), PorterDuff.Mode.SRC_IN)
 
-        if (turns.get(turn).equals(clientName)) {
+        if (turns.get(turn).equals(MainActivity.Companion.clientName)) {
             turnPlay.visibility = View.VISIBLE
             pieceCount++
         }
@@ -198,6 +205,8 @@ class PlayActivity : AppCompatActivity() {
         var r = tableRows.get(row + 1)
         var chip = r.getChildAt(column) as ImageView
         chip.setColorFilter(ContextCompat.getColor(this, color), PorterDuff.Mode.SRC_IN)
+
+        passToBoard(row, column)
     }
 
     private fun markWinningChips(winningLineCoords : IntArray) {
@@ -214,9 +223,27 @@ class PlayActivity : AppCompatActivity() {
 
         for (i in 0..3) {
             fillChip(currentRow, currentCol, R.color.green)
+            var r = boardValue.get(currentRow)
+            r.set(currentCol, 'W')
             currentRow += rowStep
             currentCol += colStep
         }
+    }
+
+    private fun passToBoard(row : Int, col : Int) {
+        var r = boardValue.get(row)
+        var c =
+        if (COLOR_TURNS[turn] == R.color.red) {
+            r.set(col, 'X')
+        }
+        else {
+            r.set(col, 'O')
+        }
+    }
+
+    private fun passBoard() {
+        val boardValueCopy = boardValue.map { it.copyOf() }.toTypedArray()
+        MainActivity.board = boardValueCopy
     }
 
     public fun handlePlayAccepted(pieceId : String, row : Int, column : Int, winner : String, winningLineCoords : IntArray?) {
@@ -231,6 +258,9 @@ class PlayActivity : AppCompatActivity() {
             fillChip(row, column, COLOR_TURNS[turn])
             markWinningChips(winningLineCoords!!)
 
+            MainActivity.winner = winner
+            passBoard()
+
             Handler(Looper.getMainLooper()).postDelayed({
                 passToResults()
             }, 1500)
@@ -242,7 +272,7 @@ class PlayActivity : AppCompatActivity() {
     }
 
     public fun passToResults() {
-        val intent = Intent(this, OpponentSelectionActivity::class.java)
+        val intent = Intent(this, ResultsActivity::class.java)
         startActivity(intent)
         finish()
     }

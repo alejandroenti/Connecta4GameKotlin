@@ -1,6 +1,5 @@
 package com.alejandrolopez.connecta4game.fragments
 
-import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +8,8 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
-import com.alejandrolopez.connecta4game.MainActivity.Companion.wsClient
+import com.alejandrolopez.connecta4game.Activities.MainActivity.Companion.clientName
+import com.alejandrolopez.connecta4game.Activities.MainActivity.Companion.wsClient
 import com.alejandrolopez.connecta4game.R
 import org.json.JSONObject
 
