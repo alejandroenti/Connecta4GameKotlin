@@ -49,10 +49,6 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
     private fun wsMessage(response: String) {
         val msgObj = JSONObject(response)
 
-        if (msgObj.getString(KeyValues.K_TYPE.value).equals("clientAnswerInvitation")) {
-            Log.d("WSMEssageDebug", msgObj.toString())
-        }
-
         when (msgObj.getString(KeyValues.K_TYPE.value)) {
             KeyValues.K_CLIENT_NAME.value -> clientName = msgObj.getString(KeyValues.K_VALUE.value)
             KeyValues.K_SERVER_DATA.value -> {
@@ -110,10 +106,12 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             KeyValues.K_COUNTDOWN.value -> {
                 val value = msgObj.getInt(KeyValues.K_VALUE.value)
 
-                if (value == 0) {
-                    (MainActivity.currentActivityRef as WaitActivity).passToPlay()
+                if (MainActivity.currentActivityRef is WaitActivity) {
+                    if (value == 0) {
+                        (MainActivity.currentActivityRef as WaitActivity).passToPlay()
+                    }
+                    (MainActivity.currentActivityRef as WaitActivity).setCounter(value)
                 }
-                (MainActivity.currentActivityRef as WaitActivity).setCounter(value)
             }
 
             KeyValues.K_PLAY_ACCEPTED.value -> {
@@ -124,7 +122,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 val winner = msgObj.optString(KeyValues.K_WINNER.value, "")
 
                 // Procesar coordenadas de línea ganadora si existen
-                lateinit var winningLineCoords: IntArray
+                var winningLineCoords = IntArray(0)
                 if (msgObj.has(KeyValues.K_WINNING_LINE_COORDS.value) && !msgObj.isNull(KeyValues.K_WINNING_LINE_COORDS.value)) {
                     val coordsArray = msgObj.getJSONArray(KeyValues.K_WINNING_LINE_COORDS.value)
                     winningLineCoords = IntArray(coordsArray.length())
@@ -136,7 +134,10 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 }
 
                 if (MainActivity.currentActivityRef is PlayActivity) {
-                    (MainActivity.currentActivityRef as PlayActivity).handlePlayAccepted(pieceId, row, col, winner, winningLineCoords)
+                    val activity = MainActivity.currentActivityRef as PlayActivity
+                    activity.runOnUiThread {
+                        activity.handlePlayAccepted(pieceId, row, col, winner, winningLineCoords)
+                    }
                 }
 
                 // Si el juego terminó
@@ -200,20 +201,25 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             }
 
             KeyValues.K_CLIENT_ANSWER_INVITATION.value -> {
-                val user : String = msgObj.getString(KeyValues.K_SEND_FROM.value)
-                val value : Boolean = msgObj.getString(KeyValues.K_VALUE.value).toBoolean()
+                if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
 
-                if (!value) {
-                    if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
-                        (MainActivity.currentActivityRef as OpponentSelectionActivity).enbleSendInvitation(user)
+                    val user: String = msgObj.getString(KeyValues.K_SEND_FROM.value)
+                    val value: Boolean = msgObj.getString(KeyValues.K_VALUE.value).toBoolean()
+
+                    if (!value) {
+                        if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                            (MainActivity.currentActivityRef as OpponentSelectionActivity).enbleSendInvitation(
+                                user
+                            )
+                        }
+                        return
                     }
-                    return
+
+                    opponentName = user
+
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitations()
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
                 }
-
-                opponentName = user
-
-                (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitations()
-                (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
             }
         }
     }

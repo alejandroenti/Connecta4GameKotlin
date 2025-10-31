@@ -2,6 +2,7 @@ package com.alejandrolopez.connecta4game
 
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -54,6 +55,8 @@ class PlayActivity : AppCompatActivity() {
             insets
         }
 
+        MainActivity.currentActivityRef = this
+
         board = findViewById<TableLayout>(R.id.playBoard)
         title = findViewById<TextView>(R.id.playTitle)
         playerTurn = findViewById<TextView>(R.id.playerTurn)
@@ -64,8 +67,6 @@ class PlayActivity : AppCompatActivity() {
         setTitle()
         turnPlay.setColorFilter(ContextCompat.getColor(this, R.color.black), PorterDuff.Mode.SRC_IN)
         initializeBoard()
-
-        MainActivity.currentActivityRef = this
     }
 
     private fun initializeBoard() {
@@ -95,7 +96,7 @@ class PlayActivity : AppCompatActivity() {
         tableRows.add(firstRow)
         board.addView(firstRow)
 
-        for (i in 1..NUM_ROWS - 1) {
+        for (i in 0..NUM_ROWS - 1) {
             var row : TableRow = TableRow(this)
             row.layoutParams = paramsRow
             row.gravity = Gravity.CENTER
@@ -144,29 +145,23 @@ class PlayActivity : AppCompatActivity() {
         colorTurn.setColorFilter(ContextCompat.getColor(this, color), PorterDuff.Mode.SRC_IN)
 
         if (turns.get(turn).equals(clientName)) {
-            playerTurn.visibility = View.VISIBLE
+            turnPlay.visibility = View.VISIBLE
             pieceCount++
         }
         else {
-            playerTurn.visibility = View.INVISIBLE
+            turnPlay.visibility = View.INVISIBLE
         }
     }
 
-    private fun fillChip(row : Int, column : Int, name : String) {
+    private fun fillChip(row : Int, column : Int, color : Int) {
         var r = tableRows.get(row + 1)
         var chip = r.getChildAt(column) as ImageView
-
-        if (players.getValue(name).color.equals("RED")) {
-            chip.setColorFilter(ContextCompat.getColor(this, R.color.red), PorterDuff.Mode.SRC_IN)
-        }
-        else {
-            chip.setColorFilter(ContextCompat.getColor(this, R.color.yellow), PorterDuff.Mode.SRC_IN)
-        }
+        chip.setColorFilter(ContextCompat.getColor(this, color), PorterDuff.Mode.SRC_IN)
     }
 
-    public fun handlePlayAccepted(pieceId : String, row : Int, column : Int, winner : String?, winningLineCoords : IntArray?) {
-        if (winner.isNullOrEmpty()) {
-            fillChip(row, column, turns.get(turn))
+    public fun handlePlayAccepted(pieceId : String, row : Int, column : Int, winner : String, winningLineCoords : IntArray?) {
+        if (winner.equals("null")) {
+            fillChip(row, column, COLOR_TURNS[turn])
             turn = (turn + 1) % 2
             setTurn(COLOR_TURNS.get(turn))
         }

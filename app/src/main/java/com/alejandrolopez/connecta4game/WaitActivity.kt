@@ -49,5 +49,6 @@ class WaitActivity: AppCompatActivity() {
     public fun passToPlay() {
         val intent = Intent(this, PlayActivity::class.java)
         startActivity(intent)
+        finish()
     }
 }
