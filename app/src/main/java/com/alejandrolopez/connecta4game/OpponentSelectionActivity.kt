@@ -137,5 +137,6 @@ class OpponentSelectionActivity : AppCompatActivity() {
     public fun passToWait() {
         val intent = Intent(this, WaitActivity::class.java)
         startActivity(intent)
+        finish()
     }
 }

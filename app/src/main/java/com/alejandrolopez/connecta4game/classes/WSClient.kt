@@ -15,6 +15,7 @@ import com.alejandrolopez.connecta4game.MainActivity.Companion.opponentName
 import com.alejandrolopez.connecta4game.MainActivity.Companion.tracker
 import com.alejandrolopez.connecta4game.MainActivity.Companion.wsClient
 import com.alejandrolopez.connecta4game.OpponentSelectionActivity
+import com.alejandrolopez.connecta4game.PlayActivity
 import com.alejandrolopez.connecta4game.WaitActivity
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
@@ -47,10 +48,6 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
 
     private fun wsMessage(response: String) {
         val msgObj = JSONObject(response)
-
-        if (msgObj.getString(KeyValues.K_TYPE.value).equals("clientAnswerInvitation")) {
-            Log.d("WSMEssageDebug", msgObj.toString())
-        }
 
         when (msgObj.getString(KeyValues.K_TYPE.value)) {
             KeyValues.K_CLIENT_NAME.value -> clientName = msgObj.getString(KeyValues.K_VALUE.value)
@@ -86,38 +83,17 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     i++
                 }
                 objects = newObjects
-
-                /*
-                if (ctrlPlay != null) {
-                    ctrlPlay.updateGameState(msgObj)
-                }
-                 */
-
-                /*if (clients.size === 1) {
-                    ctrlWait.txtPlayer0.setText(clients.get(0).name)
-                } else if (clients.size > 1) {
-                    ctrlWait.txtPlayer0.setText(clients.get(0).name)
-                    ctrlWait.txtPlayer1.setText(clients.get(1).name)
-                    ctrlPlay.title.setText(clients.get(0).name + " vs " + clients.get(1).name)
-                }*/
-
-                /*if (UtilsViews.getActiveView().equals("ViewConfig")) {
-                    UtilsViews.setViewAnimating("ViewOpponentSelection")
-                }*/
             }
 
             KeyValues.K_COUNTDOWN.value -> {
-                /*if (!UtilsViews.getActiveView().equals("ViewWait")) {
-                    // Rebutgem la resta de peticions
-                    (UtilsViews.getController("ViewOpponentSelection") as CtrlOpponentSelection).rejectAllPetions()
-                    UtilsViews.setView("ViewWait")
-                }*/
                 val value = msgObj.getInt(KeyValues.K_VALUE.value)
 
-                if (value == 0) {
-                    //UtilsViews.setViewAnimating("ViewPlay")
+                if (MainActivity.currentActivityRef is WaitActivity) {
+                    if (value == 0) {
+                        (MainActivity.currentActivityRef as WaitActivity).passToPlay()
+                    }
+                    (MainActivity.currentActivityRef as WaitActivity).setCounter(value)
                 }
-                (MainActivity.currentActivityRef as WaitActivity).setCounter(value)
             }
 
             KeyValues.K_PLAY_ACCEPTED.value -> {
@@ -125,23 +101,26 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 val col = msgObj.getInt(KeyValues.K_COLUMN.value)
                 val row = msgObj.getInt(KeyValues.K_ROW.value)
                 val gameEnded = msgObj.getBoolean(KeyValues.K_GAME_ENDED.value)
-                val winner = msgObj.optString(KeyValues.K_WINNER.value, null)
+                val winner = msgObj.optString(KeyValues.K_WINNER.value, "")
 
                 // Procesar coordenadas de línea ganadora si existen
-                val winningLineCoords: IntArray? = null
+                var winningLineCoords = IntArray(0)
                 if (msgObj.has(KeyValues.K_WINNING_LINE_COORDS.value) && !msgObj.isNull(KeyValues.K_WINNING_LINE_COORDS.value)) {
                     val coordsArray = msgObj.getJSONArray(KeyValues.K_WINNING_LINE_COORDS.value)
-                    //winningLineCoords = IntArray(coordsArray.length())
+                    winningLineCoords = IntArray(coordsArray.length())
                     var i = 0
                     while (i < coordsArray.length()) {
-                        //winningLineCoords[i] = coordsArray.getInt(i)
+                        winningLineCoords[i] = coordsArray.getInt(i)
                         i++
                     }
                 }
 
-                /*if (ctrlPlay != null) {
-                    ctrlPlay.handlePlayAccepted(pieceId, col, row, winner, winningLineCoords)
-                }*/
+                if (MainActivity.currentActivityRef is PlayActivity) {
+                    val activity = MainActivity.currentActivityRef as PlayActivity
+                    activity.runOnUiThread {
+                        activity.handlePlayAccepted(pieceId, row, col, winner, winningLineCoords)
+                    }
+                }
 
                 // Si el juego terminó
                 if (gameEnded && winner != null) {
@@ -164,33 +143,10 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             }
 
             KeyValues.K_PLAY_REJECTED.value -> {
-                val rejectedPieceId = msgObj.getString(KeyValues.K_PIECE_ID.value)
                 val reason = msgObj.optString(KeyValues.K_REASON.value, "Invalid move")
-                println("Play rejected: " + reason)
-                /*if (ctrlPlay != null) {
-                    ctrlPlay.handlePlayRejected(rejectedPieceId)
-                }*/
 
-                /*val arr = msgObj.getJSONArray(KeyValues.K_CLIENT_LIST.value)
-                clients.clear()
-
-                var i = 0
-                while (i < arr.length()) {
-                    val obj = arr.getJSONObject(i)
-                    println(obj)
-                    val name = obj.getString(KeyValues.K_NAME.value)
-                    val color = obj.getString(KeyValues.K_COLOR.value)
-                    val isPlaying = obj.getBoolean(KeyValues.K_PLAY.value)
-
-                    val cd: ClientData = ClientData(name, color)
-                    cd.SetIsPlaying(isPlaying)
-
-                    clients.add(cd)
-                    i++
-                }*/
-
-                if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
-                    (MainActivity.currentActivityRef as OpponentSelectionActivity).createSendList()
+                if (MainActivity.currentActivityRef is PlayActivity) {
+                    (MainActivity.currentActivityRef as PlayActivity).handlePlayRejected(reason)
                 }
             }
 
@@ -227,20 +183,25 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
             }
 
             KeyValues.K_CLIENT_ANSWER_INVITATION.value -> {
-                val user : String = msgObj.getString(KeyValues.K_SEND_FROM.value)
-                val value : Boolean = msgObj.getString(KeyValues.K_VALUE.value).toBoolean()
+                if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
 
-                if (!value) {
-                    if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
-                        (MainActivity.currentActivityRef as OpponentSelectionActivity).enbleSendInvitation(user)
+                    val user: String = msgObj.getString(KeyValues.K_SEND_FROM.value)
+                    val value: Boolean = msgObj.getString(KeyValues.K_VALUE.value).toBoolean()
+
+                    if (!value) {
+                        if (MainActivity.currentActivityRef is OpponentSelectionActivity) {
+                            (MainActivity.currentActivityRef as OpponentSelectionActivity).enbleSendInvitation(
+                                user
+                            )
+                        }
+                        return
                     }
-                    return
+
+                    opponentName = user
+
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitations()
+                    (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
                 }
-
-                opponentName = user
-
-                (MainActivity.currentActivityRef as OpponentSelectionActivity).removeInvitations()
-                (MainActivity.currentActivityRef as OpponentSelectionActivity).passToWait()
             }
         }
     }

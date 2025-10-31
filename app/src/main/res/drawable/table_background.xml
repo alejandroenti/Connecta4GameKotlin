@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- Color de fondo marrón -->
+    <solid android:color="#8B4513" />  <!-- Código de color marrón (color de madera o mesa) -->
+
+    <!-- Radio de las esquinas -->
+    <corners android:radius="32dp" />  <!-- Esquinas redondeadas -->
+
+    <!-- Borde grueso de color negro -->
+    <stroke android:width="4dp" android:color="#000000" />  <!-- Borde negro más grueso -->
+</shape>

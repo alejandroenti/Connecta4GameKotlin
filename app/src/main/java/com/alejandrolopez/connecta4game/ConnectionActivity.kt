@@ -97,5 +97,6 @@ class ConnectionActivity : AppCompatActivity() {
 
         val intent = Intent(this, OpponentSelectionActivity::class.java)
         startActivity(intent)
+        finish()
     }
 }
