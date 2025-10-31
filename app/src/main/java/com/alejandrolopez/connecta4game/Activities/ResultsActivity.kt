@@ -55,9 +55,13 @@ class ResultsActivity : AppCompatActivity() {
             title.text = "You Won!"
             title.setTextColor(ContextCompat.getColor(this, R.color.green))
         }
-        else {
+        else if (MainActivity.winner.equals(MainActivity.opponentName)) {
             title.text = "You Lose!"
             title.setTextColor(ContextCompat.getColor(this, R.color.red))
+        }
+        else {
+            title.text = "You Draw!"
+            title.setTextColor(ContextCompat.getColor(this, R.color.yellow))
         }
 
         status.text = "Winner: " + MainActivity.winner
