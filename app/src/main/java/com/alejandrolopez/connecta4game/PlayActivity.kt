@@ -72,7 +72,7 @@ class PlayActivity : AppCompatActivity() {
     private fun initializeBoard() {
         var paramsColumn : TableRow.LayoutParams = TableRow.LayoutParams(0,
             TableRow.LayoutParams.MATCH_PARENT,1.0f)
-        var paramsRow : TableRow.LayoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+        var paramsRow : TableRow.LayoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
             TableRow.LayoutParams.MATCH_PARENT)
 
         var firstRow : TableRow = TableRow(this)
@@ -88,7 +88,6 @@ class PlayActivity : AppCompatActivity() {
 
                 MainActivity.wsClient.send(msg.toString())
             }
-            button.text = (NUM_ROWS - 1).toString()
             button.gravity = Gravity.CENTER
             button.layoutParams = paramsColumn
             firstRow.addView(button)
@@ -106,7 +105,7 @@ class PlayActivity : AppCompatActivity() {
                 chipImage.setImageResource(R.drawable.ic_chip)
                 chipImage.layoutParams = paramsColumn
                 chipImage.scaleType = ImageView.ScaleType.CENTER_INSIDE
-                chipImage.setPadding(30, 30, 30, 30)
+                chipImage.setPadding(10, 10, 10, 10)
                 row.addView(chipImage)
             }
             tableRows.add(row)
