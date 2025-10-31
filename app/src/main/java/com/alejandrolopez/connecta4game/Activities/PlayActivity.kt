@@ -2,6 +2,7 @@ package com.alejandrolopez.connecta4game.Activities
 
 import android.content.Intent
 import android.graphics.PorterDuff
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Looper
 import android.os.Handler
@@ -32,6 +33,8 @@ class PlayActivity : AppCompatActivity() {
     private val CHIPS_NUM_ROWS = 3
     private val CHIPS_NUM_COL = 14
 
+
+    private var boardValue : Array<Array<Char>> = Array(NUM_ROWS - 1) { Array(NUM_COLS) { ' ' } }
     private var tableRows : MutableList<TableRow> = mutableListOf<TableRow>()
     private var players : HashMap<String, ClientData> = HashMap<String, ClientData>()
     private var chips : HashMap<String, ImageView> = HashMap<String, ImageView>()
@@ -223,6 +226,21 @@ class PlayActivity : AppCompatActivity() {
         }
     }
 
+    private fun passTOBoard(row : Int, col : Int) {
+        var r = boardValue.get(row)
+        var c = r.get(col)
+        if (COLOR_TURNS[turn] == R.color.red) {
+            c = 'X'
+        }
+        else {
+            c = 'O'
+        }
+    }
+
+    private fun passBoard() {
+        MainActivity.board = boardValue
+    }
+
     public fun handlePlayAccepted(pieceId : String, row : Int, column : Int, winner : String, winningLineCoords : IntArray?) {
         if (winner.equals("null")) {
             chips.getValue(pieceId).visibility = View.INVISIBLE
@@ -235,6 +253,9 @@ class PlayActivity : AppCompatActivity() {
             fillChip(row, column, COLOR_TURNS[turn])
             markWinningChips(winningLineCoords!!)
 
+            MainActivity.winner = winner
+            passBoard()
+
             Handler(Looper.getMainLooper()).postDelayed({
                 passToResults()
             }, 1500)
@@ -246,7 +267,7 @@ class PlayActivity : AppCompatActivity() {
     }
 
     public fun passToResults() {
-        val intent = Intent(this, OpponentSelectionActivity::class.java)
+        val intent = Intent(this, ResultsActivity::class.java)
         startActivity(intent)
         finish()
     }

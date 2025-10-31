@@ -2,6 +2,12 @@ package com.alejandrolopez.connecta4game.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.View
+import android.widget.ImageView
+import android.widget.TableLayout
+import android.widget.TableRow
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.alejandrolopez.connecta4game.classes.ActivityTracker
 import com.alejandrolopez.connecta4game.classes.ClientData
@@ -18,26 +24,18 @@ class MainActivity : AppCompatActivity() {
         public lateinit var clientName : String
         public lateinit var opponentName : String
         public lateinit var myColor : String
+        public lateinit var winner : String
 
+        public var board : Array<Array<Char>> = Array(1) { Array(1) { ' ' } }
         public var clients : MutableList<ClientData> = ArrayList<ClientData>()
         public var objects: MutableList<GameObject> = ArrayList<GameObject>()
 
         public var currentActivityRef: AppCompatActivity? = null
 
-        public var tracker : ActivityTracker = ActivityTracker()
-
         public fun connectWS(protocol : String, serverIP : String, port : String) {
             var uri : URI = URI(protocol + "://" + serverIP + ":" + port)
             wsClient = WSClient(uri)
             wsClient.connect()
-        }
-
-        fun jsonArrayToList(array: JSONArray): List<Any?> {
-            val list = mutableListOf<Any?>()
-            for (i in 0 until array.length()) {
-                list.add(array.get(i))
-            }
-            return list
         }
     }
 

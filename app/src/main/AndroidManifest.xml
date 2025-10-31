@@ -28,6 +28,7 @@
         <activity android:name=".Activities.OpponentSelectionActivity" />
         <activity android:name=".Activities.WaitActivity" />
         <activity android:name=".Activities.PlayActivity" />
+        <activity android:name=".Activities.ResultsActivity" />
     </application>
 
 </manifest>
