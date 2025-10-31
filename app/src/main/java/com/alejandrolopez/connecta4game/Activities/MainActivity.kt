@@ -1,8 +1,6 @@
-package com.alejandrolopez.connecta4game
+package com.alejandrolopez.connecta4game.Activities
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.alejandrolopez.connecta4game.classes.ActivityTracker
@@ -10,8 +8,6 @@ import com.alejandrolopez.connecta4game.classes.ClientData
 import com.alejandrolopez.connecta4game.classes.GameObject
 import com.alejandrolopez.connecta4game.classes.WSClient
 import org.json.JSONArray
-import org.json.JSONObject
-import java.lang.ref.WeakReference
 import java.net.URI
 
 

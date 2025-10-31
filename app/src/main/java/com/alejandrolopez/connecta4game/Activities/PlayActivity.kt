@@ -1,4 +1,4 @@
-package com.alejandrolopez.connecta4game
+package com.alejandrolopez.connecta4game.Activities
 
 import android.content.Intent
 import android.graphics.PorterDuff
@@ -18,9 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.alejandrolopez.connecta4game.MainActivity.Companion.clientName
-import com.alejandrolopez.connecta4game.MainActivity.Companion.clients
-import com.alejandrolopez.connecta4game.MainActivity.Companion.opponentName
+import com.alejandrolopez.connecta4game.R
 import com.alejandrolopez.connecta4game.classes.ClientData
 import com.alejandrolopez.connecta4game.classes.KeyValues
 import org.json.JSONObject
@@ -160,20 +158,26 @@ class PlayActivity : AppCompatActivity() {
     }
 
     private fun getPlayers() {
-        for (client in clients) {
-            if (client.name.equals(clientName)) {
+        for (client in MainActivity.Companion.clients) {
+            if (client.name.equals(MainActivity.Companion.clientName)) {
                 players.put(client.name!!, client)
                 pieceID = client.color!!.get(0) + "_"
                 if (client.color.equals("RED")) {
-                    turns = arrayOf(clientName, opponentName)
+                    turns = arrayOf(
+                        MainActivity.Companion.clientName,
+                        MainActivity.Companion.opponentName
+                    )
                 }
             }
 
-            if (client.name.equals(opponentName)) {
+            if (client.name.equals(MainActivity.Companion.opponentName)) {
                 players.put(client.name!!, client)
                 if (client.color.equals("RED")) {
 
-                    turns = arrayOf(opponentName, clientName)
+                    turns = arrayOf(
+                        MainActivity.Companion.opponentName,
+                        MainActivity.Companion.clientName
+                    )
                 }
             }
         }
@@ -185,7 +189,7 @@ class PlayActivity : AppCompatActivity() {
         playerTurn.text = turns.get(turn)
         colorTurn.setColorFilter(ContextCompat.getColor(this, color), PorterDuff.Mode.SRC_IN)
 
-        if (turns.get(turn).equals(clientName)) {
+        if (turns.get(turn).equals(MainActivity.Companion.clientName)) {
             turnPlay.visibility = View.VISIBLE
             pieceCount++
         }
