@@ -29,17 +29,22 @@ class PlayActivity : AppCompatActivity() {
     private val NUM_ROWS : Int = 6
     private val NUM_COLS : Int = 7
 
+    private val CHIPS_NUM_ROWS = 3
+    private val CHIPS_NUM_COL = 14
+
     private var tableRows : MutableList<TableRow> = mutableListOf<TableRow>()
     private var players : HashMap<String, ClientData> = HashMap<String, ClientData>()
+    private var chips : HashMap<String, ImageView> = HashMap<String, ImageView>()
     private lateinit var turns : Array<String>
     private val COLOR_TURNS : Array<Int> = arrayOf(R.color.red, R.color.yellow)
 
     private var turn : Int = 0
     private lateinit var pieceID : String
-    private var pieceCount : Int = 0
+    private var pieceCount : Int = -1
 
 
     private lateinit var board : TableLayout
+    private lateinit var chipBoard : TableLayout
     private lateinit var title : TextView
     private lateinit var playerTurn : TextView
     private lateinit var colorTurn : ImageView
@@ -58,6 +63,7 @@ class PlayActivity : AppCompatActivity() {
         MainActivity.currentActivityRef = this
 
         board = findViewById<TableLayout>(R.id.playBoard)
+        chipBoard = findViewById<TableLayout>(R.id.chipBoard)
         title = findViewById<TextView>(R.id.playTitle)
         playerTurn = findViewById<TextView>(R.id.playerTurn)
         colorTurn = findViewById<ImageView>(R.id.colorTurn)
@@ -67,6 +73,7 @@ class PlayActivity : AppCompatActivity() {
         setTitle()
         turnPlay.setColorFilter(ContextCompat.getColor(this, R.color.black), PorterDuff.Mode.SRC_IN)
         initializeBoard()
+        initializeChips()
     }
 
     private fun initializeBoard() {
@@ -113,8 +120,41 @@ class PlayActivity : AppCompatActivity() {
         }
     }
 
+    private fun initializeChips() {
+        var paramsColumn : TableRow.LayoutParams = TableRow.LayoutParams(0,
+            TableRow.LayoutParams.MATCH_PARENT,1.0f)
+        var paramsRow : TableRow.LayoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+            TableRow.LayoutParams.MATCH_PARENT)
+
+        for (i in 0..CHIPS_NUM_ROWS - 1) {
+            var row : TableRow = TableRow(this)
+            row.layoutParams = paramsRow
+            row.gravity = Gravity.CENTER
+            for (j in 0..CHIPS_NUM_COL - 1) {
+                var chipImage = ImageView(this)
+                chipImage.setImageResource(R.drawable.ic_chip)
+                chipImage.layoutParams = paramsColumn
+                chipImage.scaleType = ImageView.ScaleType.CENTER_INSIDE
+                chipImage.setPadding(10, 10, 10, 10)
+
+                if (j < 7) {
+                    chipImage.setColorFilter(ContextCompat.getColor(this, R.color.red), PorterDuff.Mode.SRC_IN)
+                    chips.put("R_" + ((i * 7) + j).toString(), chipImage)
+                }
+                else {
+                    chipImage.setColorFilter(ContextCompat.getColor(this, R.color.yellow), PorterDuff.Mode.SRC_IN)
+                    chips.put("Y_" + ((i * 7) + (j - 7)).toString(), chipImage)
+                }
+
+                row.addView(chipImage)
+            }
+            tableRows.add(row)
+            chipBoard.addView(row)
+        }
+    }
+
     private fun setTitle() {
-        title.text = clientName + " VS " + opponentName
+        title.text = turns[0] + " VS " + turns[1]
     }
 
     private fun getPlayers() {
@@ -160,6 +200,7 @@ class PlayActivity : AppCompatActivity() {
 
     public fun handlePlayAccepted(pieceId : String, row : Int, column : Int, winner : String, winningLineCoords : IntArray?) {
         if (winner.equals("null")) {
+            chips.getValue(pieceId).visibility = View.INVISIBLE
             fillChip(row, column, COLOR_TURNS[turn])
             turn = (turn + 1) % 2
             setTurn(COLOR_TURNS.get(turn))
