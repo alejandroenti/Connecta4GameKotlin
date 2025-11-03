@@ -1,0 +1,57 @@
+package com.alejandrolopez.connecta4game.Activities
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.alejandrolopez.connecta4game.R
+
+class WaitActivity: AppCompatActivity() {
+
+    private lateinit var counter : TextView
+    private lateinit var player1 : TextView
+    private lateinit var player2 : TextView
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_wait)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.wait)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        counter = findViewById<TextView>(R.id.counterText)
+        player1 = findViewById<TextView>(R.id.player1Text)
+        player2 = findViewById<TextView>(R.id.player2Text)
+
+        counter.setText("3")
+        player1.setText(MainActivity.Companion.clientName)
+        player2.setText(MainActivity.Companion.opponentName)
+
+        MainActivity.currentActivityRef = this
+    }
+
+    public fun setCounter(value : Int) {
+        runOnUiThread {
+            counter.text = value.toString()
+        }
+    }
+
+    public fun passToPlay() {
+        val intent = Intent(this, PlayActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    public fun passToOpponentSelection() {
+        val intent = Intent(this, OpponentSelectionActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+}
