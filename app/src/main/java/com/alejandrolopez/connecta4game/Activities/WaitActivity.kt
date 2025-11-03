@@ -48,4 +48,10 @@ class WaitActivity: AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
+    public fun passToOpponentSelection() {
+        val intent = Intent(this, OpponentSelectionActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 }
