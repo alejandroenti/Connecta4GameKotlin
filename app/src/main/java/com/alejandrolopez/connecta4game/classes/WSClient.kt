@@ -21,7 +21,7 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
 
     override fun onOpen(handshakedata: ServerHandshake?) {
         Log.d("WSConnection", "[*] Opened Connection!")
-        var msgObject : JSONObject = JSONObject()
+        val msgObject : JSONObject = JSONObject()
         msgObject.put(KeyValues.K_TYPE.value, KeyValues.K_SET_PLAYER_NAME.value)
         msgObject.put(KeyValues.K_NAME.value, clientName)
         wsClient.send(msgObject.toString())
@@ -79,6 +79,16 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 objects = newObjects
             }
 
+            KeyValues.K_CLIENT_DISCONNECTED.value -> {
+                if (MainActivity.currentActivityRef is WaitActivity) {
+                    (MainActivity.currentActivityRef as WaitActivity).passToOpponentSelection()
+                }
+                else if (MainActivity.currentActivityRef is PlayActivity) {
+                    MainActivity.winner = msgObj.getString("winner")
+                    (MainActivity.currentActivityRef as PlayActivity).passToResults()
+                }
+            }
+
             KeyValues.K_COUNTDOWN.value -> {
                 val value = msgObj.getInt(KeyValues.K_VALUE.value)
 
@@ -94,7 +104,6 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                 val pieceId = msgObj.getString(KeyValues.K_PIECE_ID.value)
                 val col = msgObj.getInt(KeyValues.K_COLUMN.value)
                 val row = msgObj.getInt(KeyValues.K_ROW.value)
-                val gameEnded = msgObj.getBoolean(KeyValues.K_GAME_ENDED.value)
                 val winner = msgObj.optString(KeyValues.K_WINNER.value, "")
 
                 // Procesar coordenadas de línea ganadora si existen
@@ -114,25 +123,6 @@ class WSClient(serverUri : URI) : WebSocketClient(serverUri) {
                     activity.runOnUiThread {
                         activity.handlePlayAccepted(pieceId, row, col, winner, winningLineCoords)
                     }
-                }
-
-                // Si el juego terminó
-                if (gameEnded && winner != null) {
-                    /*pauseDuring(1500, {
-                        var result = ""
-                        if (winner == "DRAW") {
-                            result = "DRAW"
-                        } else if (winner == myColor) {
-                            result = "WIN"
-                        } else {
-                            result = "LOSE"
-                        }
-
-                        val ctrlResult: CtrlResult =
-                            UtilsViews.getController("ViewResult") as CtrlResult
-                        ctrlResult.setResultData(result, myColor, winner, ctrlPlay.boardState)
-                        UtilsViews.setViewAnimating("ViewResult")
-                    })*/
                 }
             }
 
