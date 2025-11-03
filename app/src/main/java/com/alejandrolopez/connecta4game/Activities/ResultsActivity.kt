@@ -51,11 +51,11 @@ class ResultsActivity : AppCompatActivity() {
 
         initializeBoard()
 
-        if (MainActivity.winner.contains(MainActivity.clientName)) {
+        if (MainActivity.winner.equals(MainActivity.clientName)) {
             title.text = "You Won!"
             title.setTextColor(ContextCompat.getColor(this, R.color.green))
         }
-        else if (MainActivity.winner.contains(MainActivity.opponentName)) {
+        else if (MainActivity.winner.equals(MainActivity.opponentName)) {
             title.text = "You Lose!"
             title.setTextColor(ContextCompat.getColor(this, R.color.red))
         }

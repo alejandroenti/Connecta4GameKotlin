@@ -259,6 +259,7 @@ class PlayActivity : AppCompatActivity() {
             markWinningChips(winningLineCoords!!)
 
             MainActivity.winner = winner
+            passBoard()
 
             Handler(Looper.getMainLooper()).postDelayed({
                 passToResults()
@@ -271,8 +272,6 @@ class PlayActivity : AppCompatActivity() {
     }
 
     public fun passToResults() {
-        passBoard()
-
         val intent = Intent(this, ResultsActivity::class.java)
         startActivity(intent)
         finish()
